@@ -7,7 +7,7 @@
     <title>@yield('title', 'Earthquake Monitoring System')</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/1995/1995463.png">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('img/logo.svg') }}">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
