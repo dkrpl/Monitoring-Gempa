@@ -21,7 +21,7 @@
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-    <link rel="icon" type="image/svg+xml" href="{{ asset('logo.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('img/logo.png') }}">
 
     <!-- Custom CSS -->
     <style>
