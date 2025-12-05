@@ -462,6 +462,124 @@
         .status-warning {
             background-color: var(--warning-orange);
         }
+
+        /* Tambahkan CSS berikut ke file app.blade.php di dalam style tag */
+
+/* Fix wrapper and sidebar */
+#wrapper {
+    display: flex;
+    overflow: hidden; /* Tambahkan ini */
+}
+
+#sidebar-wrapper {
+    min-height: 100vh;
+    margin-left: -15rem;
+    transition: margin 0.25s ease-out;
+    width: 15rem;
+    background: linear-gradient(180deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    z-index: 1000;
+    position: fixed; /* Ubah menjadi fixed */
+    top: 0;
+    left: 0;
+    bottom: 0;
+    overflow-y: auto; /* Tambahkan scroll jika konten panjang */
+}
+
+/* Sidebar content wrapper */
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Sidebar scrolling area */
+.sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
+
+/* Sidebar toggler tetap di bawah */
+.sidebar-toggler-container {
+    padding: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: auto;
+}
+
+/* Main content area */
+#page-content-wrapper {
+    min-width: 100vw;
+    width: 100%;
+    transition: all 0.25s ease-out;
+    margin-left: 0; /* Reset margin */
+    overflow-x: hidden; /* Mencegah scroll horizontal */
+}
+
+/* When sidebar is toggled */
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: 0;
+}
+
+#wrapper.toggled #page-content-wrapper {
+    margin-left: 15rem;
+}
+
+/* Untuk layar desktop */
+@media (min-width: 768px) {
+    #sidebar-wrapper {
+        margin-left: 0;
+        position: fixed;
+    }
+
+    #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+        margin-left: 15rem; /* Space untuk sidebar */
+    }
+
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: -15rem;
+    }
+
+    #wrapper.toggled #page-content-wrapper {
+        margin-left: 0;
+    }
+}
+
+/* Untuk layar mobile */
+@media (max-width: 767.98px) {
+    #sidebar-wrapper {
+        position: fixed;
+        z-index: 1040;
+    }
+
+    #page-content-wrapper {
+        margin-left: 0 !important;
+    }
+
+    #wrapper.toggled #page-content-wrapper {
+        position: relative;
+    }
+}
+
+    /* Scrollbar khusus untuk sidebar */
+    #sidebar-wrapper::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #sidebar-wrapper::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    #sidebar-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 3px;
+    }
+
+    #sidebar-wrapper::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
     </style>
 
     @stack('styles')
