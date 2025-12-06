@@ -24,5 +24,11 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });
+
+        Route::bind('event', function ($value) {
+        return \App\Models\EarthquakeEvent::where('id', $value)
+            ->where('status', '!=', 'normal') // Only non-normal events for users
+            ->firstOrFail();
+    });
     }
 }

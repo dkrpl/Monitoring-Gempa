@@ -122,6 +122,63 @@
     .dashboard-welcome .text-muted {
         color: rgba(255, 255, 255, 0.8) !important;
     }
+    .user-profile-img-sm {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    }
+
+    .user-profile-img-sm.bg-primary {
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+    .user-profile-img-sm {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    }
+
+    .user-profile-img-sm.bg-primary {
+        font-size: 0.9rem;
+        font-weight: bold;
+    }
+
+    #activityTable tbody tr {
+        transition: all 0.2s;
+    }
+
+    #activityTable tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+        transform: translateX(2px);
+    }
+
+    #activityTable td {
+        vertical-align: middle;
+        padding: 12px 8px;
+    }
+
+    #activityTable .badge {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+
+    .activity-action {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
 </style>
 @endpush
 
@@ -831,32 +888,197 @@
                 <h6 class="m-0 font-weight-bold text-primary">
                     <i class="fas fa-history mr-2"></i>Recent Activity
                 </h6>
-                <button class="btn btn-sm btn-outline-primary" onclick="refreshActivity()">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
+                <div class="btn-group">
+                    @if(Auth::user()->role === 'admin')
+                        <a href="{{ route('activity-logs.index') }}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-list mr-1"></i> View All
+                        </a>
+                    @endif
+                    <button class="btn btn-sm btn-outline-secondary" onclick="refreshActivity()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table">
+                    <table class="table table-hover" id="activityTable">
                         <thead>
                             <tr>
-                                <th>Time</th>
-                                <th>User</th>
-                                <th>Activity</th>
-                                <th>Details</th>
+                                <th width="15%">Time</th>
+                                @if(Auth::user()->role === 'admin')
+                                    <th width="20%">User</th>
+                                @endif
+                                <th width="20%">Action</th>
+                                <th>Description</th>
+                                @if(Auth::user()->role === 'admin')
+                                    <th width="15%">IP Address</th>
+                                @endif
                             </tr>
                         </thead>
-                        <tbody id="activityTable">
-                            <tr>
-                                <td colspan="4" class="text-center py-4">
-                                    <i class="fas fa-history fa-2x text-gray-300 mb-3"></i>
-                                    <h6 class="text-gray-500">No recent activity</h6>
-                                    <p class="text-gray-500 small">Activity will appear here as you use the system</p>
-                                </td>
-                            </tr>
+                        <tbody>
+                            @php
+                                // Get recent activity logs
+                                $recentActivities = \App\Models\ActivityLog::with('user')
+                                    ->orderBy('created_at', 'desc')
+                                    ->limit(10)
+                                    ->get();
+                            @endphp
+
+                            @if($recentActivities->isEmpty())
+                                <tr>
+                                    <td colspan="{{ Auth::user()->role === 'admin' ? '5' : '3' }}" class="text-center py-4">
+                                        <i class="fas fa-history fa-2x text-gray-300 mb-3"></i>
+                                        <h6 class="text-gray-500">No recent activity</h6>
+                                        <p class="text-gray-500 small">Activity will appear here as you use the system</p>
+                                        @if(Auth::user()->role === 'admin')
+                                            <a href="{{ route('activity-logs.index') }}" class="btn btn-sm btn-primary mt-2">
+                                                <i class="fas fa-list mr-1"></i> View Activity Logs
+                                            </a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @else
+                                @foreach($recentActivities as $activity)
+                                    <tr>
+                                        <td>
+                                            <div class="text-muted small">
+                                                {{ $activity->created_at->format('M d, Y') }}
+                                            </div>
+                                            <div class="font-weight-bold">
+                                                {{ $activity->created_at->format('H:i:s') }}
+                                            </div>
+                                            <div class="text-muted small">
+                                                {{ $activity->created_at->diffForHumans() }}
+                                            </div>
+                                        </td>
+                                        @if(Auth::user()->role === 'admin')
+                                            <td>
+                                                @if($activity->user)
+                                                    <div class="d-flex align-items-center">
+                                                        @if($activity->user->image)
+                                                            <img src="{{ asset('storage/' . $activity->user->image) }}"
+                                                                 class="user-profile-img-sm mr-2"
+                                                                 alt="{{ $activity->user->name }}">
+                                                        @else
+                                                            <div class="user-profile-img-sm bg-primary text-white mr-2 d-flex align-items-center justify-content-center"
+                                                                 style="width: 32px; height: 32px; border-radius: 50%; font-size: 0.9rem;">
+                                                                {{ strtoupper(substr($activity->user->name, 0, 1)) }}
+                                                            </div>
+                                                        @endif
+                                                        <div>
+                                                            <div class="font-weight-bold">{{ $activity->user->name }}</div>
+                                                            <div class="text-muted small">
+                                                                <span class="badge badge-{{ $activity->user->role === 'admin' ? 'danger' : 'info' }}">
+                                                                    {{ ucfirst($activity->user->role) }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <div class="text-muted">
+                                                        <i class="fas fa-robot"></i> System
+                                                    </div>
+                                                @endif
+                                            </td>
+                                        @endif
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="mr-2">
+                                                    <i class="{{ $activity->action_icon }} text-{{ $activity->action_color }}"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="font-weight-bold">{{ ucfirst($activity->action) }}</div>
+                                                    <div class="text-muted small">
+                                                        @if($activity->model_type)
+                                                            {{ class_basename($activity->model_type) }}
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="font-weight-bold">{{ $activity->description }}</div>
+                                            @if($activity->details && is_array($activity->details))
+                                                <div class="text-muted small mt-1">
+                                                    @foreach($activity->details as $key => $value)
+                                                        @if(!in_array($key, ['timestamp', 'browser', 'location']))
+                                                            <span class="badge badge-light mr-1">
+                                                                {{ $key }}: {{ is_array($value) ? json_encode($value) : $value }}
+                                                            </span>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </td>
+                                        @if(Auth::user()->role === 'admin')
+                                            <td>
+                                                <code class="small">{{ $activity->ip_address }}</code>
+                                                @if($activity->user_agent)
+                                                    <div class="text-muted small mt-1" title="{{ $activity->user_agent }}">
+                                                        {{ Str::limit($activity->user_agent, 25) }}
+                                                    </div>
+                                                @endif
+                                            </td>
+                                        @endif
+                                    </tr>
+                                @endforeach
+                            @endif
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Activity Statistics -->
+                @if(Auth::user()->role === 'admin')
+                    <div class="row mt-4">
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <div class="card border-left-primary h-100">
+                                <div class="card-body p-3 text-center">
+                                    <div class="text-primary font-weight-bold" style="font-size: 1.5rem;">
+                                        {{ \App\Models\ActivityLog::count() }}
+                                    </div>
+                                    <div class="text-muted small">Total Activities</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <div class="card border-left-success h-100">
+                                <div class="card-body p-3 text-center">
+                                    <div class="text-success font-weight-bold" style="font-size: 1.5rem;">
+                                        {{ \App\Models\ActivityLog::today()->count() }}
+                                    </div>
+                                    <div class="text-muted small">Today</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <div class="card border-left-warning h-100">
+                                <div class="card-body p-3 text-center">
+                                    <div class="text-warning font-weight-bold" style="font-size: 1.5rem;">
+                                        {{ \App\Models\ActivityLog::distinct('user_id')->count() }}
+                                    </div>
+                                    <div class="text-muted small">Active Users</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <div class="card border-left-info h-100">
+                                <div class="card-body p-3 text-center">
+                                    <div class="text-info font-weight-bold" style="font-size: 1.5rem;">
+                                        {{ \App\Models\ActivityLog::distinct('action')->count() }}
+                                    </div>
+                                    <div class="text-muted small">Action Types</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Showing last {{ $recentActivities->count() }} activities
+                        </small>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -1330,41 +1552,213 @@
     }
 
     function refreshActivity() {
-        const btn = event.target.closest('button');
-        const originalHtml = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        btn.disabled = true;
+    const btn = event?.target?.closest('button') || document.querySelector('[onclick="refreshActivity()"]');
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    btn.disabled = true;
 
-        setTimeout(() => {
-            const tableBody = document.getElementById('activityTable');
-            tableBody.innerHTML = `
-                <tr>
-                    <td>${new Date().toLocaleTimeString()}</td>
-                    <td>System</td>
-                    <td>Dashboard Refresh</td>
-                    <td>Updated statistics and activity log</td>
-                </tr>
-                <tr>
-                    <td colspan="4" class="text-center py-4">
-                        <i class="fas fa-history fa-2x text-gray-300 mb-3"></i>
-                        <h6 class="text-gray-500">Limited activity history</h6>
-                        <p class="text-gray-500 small">Full activity logging requires additional setup</p>
-                    </td>
-                </tr>
-            `;
+    // Show loading state
+    const tableBody = document.querySelector('#activityTable tbody');
+    const originalContent = tableBody.innerHTML;
+    tableBody.innerHTML = `
+        <tr>
+            <td colspan="{{ Auth::user()->role === 'admin' ? '5' : '3' }}" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading recent activities...</p>
+            </td>
+        </tr>
+    `;
 
+    // Fetch updated activity data
+    fetch('/api/v1/activity/recent')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Activity data received:', data);
+
+            if (data.success && data.activities && data.activities.length > 0) {
+                let html = '';
+
+                data.activities.forEach(activity => {
+                    const time = new Date(activity.created_at);
+                    const isAdmin = {{ Auth::user()->role === 'admin' ? 'true' : 'false' }};
+
+                    // Determine color based on action
+                    const getActionColor = (action) => {
+                        if (action.includes('login')) return 'success';
+                        if (action.includes('create')) return 'success';
+                        if (action.includes('update')) return 'warning';
+                        if (action.includes('delete')) return 'danger';
+                        if (action.includes('earthquake')) return 'danger';
+                        if (action.includes('device')) return 'primary';
+                        return 'secondary';
+                    };
+
+                    // Determine icon based on action
+                    const getActionIcon = (action) => {
+                        if (action.includes('login')) return 'fas fa-sign-in-alt';
+                        if (action.includes('create')) return 'fas fa-plus-circle';
+                        if (action.includes('update')) return 'fas fa-edit';
+                        if (action.includes('delete')) return 'fas fa-trash';
+                        if (action.includes('earthquake')) return 'fas fa-earthquake';
+                        if (action.includes('device')) return 'fas fa-microchip';
+                        return 'fas fa-history';
+                    };
+
+                    const actionColor = getActionColor(activity.action);
+                    const actionIcon = getActionIcon(activity.action);
+
+                    // User column (only for admin)
+                    let userHtml = '';
+                    if (isAdmin) {
+                        userHtml = activity.user ? `
+                            <div class="d-flex align-items-center">
+                                <div class="user-profile-img-sm bg-primary text-white mr-2 d-flex align-items-center justify-content-center"
+                                     style="width: 32px; height: 32px; border-radius: 50%; font-size: 0.9rem;">
+                                    ${activity.user.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <div class="font-weight-bold">${activity.user.name}</div>
+                                    <div class="text-muted small">
+                                        <span class="badge badge-${activity.user.role === 'admin' ? 'danger' : 'info'}">
+                                            ${activity.user.role}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="text-muted">
+                                <i class="fas fa-robot"></i> System
+                            </div>
+                        `;
+                    }
+
+                    // IP column (only for admin)
+                    let ipHtml = '';
+                    if (isAdmin) {
+                        ipHtml = `
+                            <code class="small">${activity.ip_address || ''}</code>
+                            ${activity.user_agent ? `
+                                <div class="text-muted small mt-1" title="${activity.user_agent}">
+                                    ${activity.user_agent.substring(0, 25)}${activity.user_agent.length > 25 ? '...' : ''}
+                                </div>
+                            ` : ''}
+                        `;
+                    }
+
+                    // Model info
+                    const modelInfo = activity.model_type ?
+                        `<div class="text-muted small">${activity.model_type.replace(/^App\\Models\\/, '')}</div>` : '';
+
+                    html += `
+                        <tr>
+                            <td>
+                                <div class="text-muted small">
+                                    ${time.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </div>
+                                <div class="font-weight-bold">
+                                    ${time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                </div>
+                                <div class="text-muted small">
+                                    ${activity.time_ago}
+                                </div>
+                            </td>
+                            ${isAdmin ? `<td>${userHtml}</td>` : ''}
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="mr-2">
+                                        <i class="${actionIcon} text-${actionColor}"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-weight-bold text-${actionColor}">${activity.action.replace('_', ' ').toUpperCase()}</div>
+                                        ${modelInfo}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="font-weight-bold">${activity.description}</div>
+                                ${activity.details ? `
+                                    <div class="text-muted small mt-1">
+                                        ${Object.entries(activity.details).map(([key, value]) => {
+                                            if (!['timestamp', 'browser', 'location'].includes(key)) {
+                                                const displayValue = Array.isArray(value) ? JSON.stringify(value) : value;
+                                                return `<span class="badge badge-light mr-1">${key}: ${displayValue}</span>`;
+                                            }
+                                            return '';
+                                        }).join('')}
+                                    </div>
+                                ` : ''}
+                            </td>
+                            ${isAdmin ? `<td>${ipHtml}</td>` : ''}
+                        </tr>
+                    `;
+                });
+
+                tableBody.innerHTML = html;
+
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Activity Refreshed!',
+                    text: `Loaded ${data.activities.length} recent activities`,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } else {
+                // Show no data message
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="{{ Auth::user()->role === 'admin' ? '5' : '3' }}" class="text-center py-4">
+                            <i class="fas fa-history fa-2x text-gray-300 mb-3"></i>
+                            <h6 class="text-gray-500">No recent activity</h6>
+                            <p class="text-gray-500 small">Activity will appear here as you use the system</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error refreshing activities:', error);
+            // Restore original content on error
+            tableBody.innerHTML = originalContent;
+            Swal.fire('Error!', 'Failed to load activities. Please try again.', 'error');
+        })
+        .finally(() => {
             btn.innerHTML = originalHtml;
             btn.disabled = false;
+        });
+}
 
-            Swal.fire({
-                icon: 'info',
-                title: 'Activity Refreshed',
-                text: 'Recent activity has been updated.',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }, 1000);
-    }
+// Function to load activity statistics
+function loadActivityStats() {
+    fetch('/api/v1/activity/statistics')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update statistics cards if they exist
+                const statsElements = {
+                    'totalActivities': data.statistics.total_logs,
+                    'todayActivities': data.statistics.today_logs,
+                    'uniqueUsers': data.statistics.unique_users,
+                    'uniqueActions': data.statistics.unique_actions
+                };
+
+                for (const [key, value] of Object.entries(statsElements)) {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.textContent = value;
+                    }
+                }
+            }
+        })
+        .catch(error => console.error('Error loading activity stats:', error));
+}
 
     function loadRecentDetections() {
         fetch('/earthquake-events/recent')

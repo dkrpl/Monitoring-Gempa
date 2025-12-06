@@ -13,6 +13,10 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ActivityLogController;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\UserEventController;
+use Illuminate\Support\Facades\Auth;
 
 Route::controller(LandingController::class)->group(function () {
     Route::get('/', 'index')->name('landing');
@@ -23,11 +27,22 @@ Route::controller(LandingController::class)->group(function () {
 
 // Auth Routes (from Breeze)
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    // Redirect based on role
+    if (Auth::check()) {
+        if (Auth::user()->role === 'admin') {
+            return view('dashboard');
+        } else {
+            return redirect()->route('user.dashboard');
+        }
+    }
+    return redirect()->route('login');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Profile Routes (accessible to all authenticated users)
+// ==================== PUBLIC ROUTES ====================
+
+// ==================== AUTHENTICATED USER ROUTES (ALL USERS) ====================
 Route::middleware(['auth'])->group(function () {
+    // Profile Routes (accessible to all authenticated users)
     Route::prefix('profile')->group(function () {
         Route::get('/', [ProfileController::class, 'show'])->name('profile.show');
         Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -38,15 +53,45 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
+// ==================== USER-SPECIFIC ROUTES (NON-ADMIN) ====================
+Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+    // Dashboard for regular users
+    Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+
+    // Events (read-only for users)
+    Route::get('/events', [UserEventController::class, 'index'])->name('events.index');
+    Route::get('/events/map', [UserEventController::class, 'map'])->name('events.map');
+    Route::get('/events/alerts', [UserEventController::class, 'alerts'])->name('events.alerts');
+    Route::get('/events/statistics', [UserEventController::class, 'statistics'])->name('events.statistics');
+    Route::get('/events/{id}', [UserEventController::class, 'show'])->name('events.show');
+
+    // User Profile (separate from admin profile)
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/update', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+        Route::put('/notifications', [ProfileController::class, 'updateNotifications'])->name('profile.notifications');
+        Route::delete('/image', [ProfileController::class, 'deleteImage'])->name('profile.image.delete');
+    });
+
+   // API endpoints for user dashboard
+    Route::get('/dashboard-data', [UserDashboardController::class, 'getDashboardData']);
+    Route::get('/check-alerts', [UserDashboardController::class, 'checkAlerts']);
+    Route::get('/recent-events', [UserDashboardController::class, 'getRecentEvents']);
+    Route::get('/statistics', [UserDashboardController::class, 'getUserStatistics']);
+
+});
+
+// ==================== ADMIN-ONLY ROUTES ====================
 Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     // User Management Routes
     Route::resource('users', UserController::class);
-
-    // Additional user routes
     Route::post('/users/{user}/status', [UserController::class, 'updateStatus'])
         ->name('users.updateStatus');
 
     // Device Management Routes
+
     Route::post('/devices/{device}/status', [DeviceController::class, 'updateStatus'])
         ->name('devices.updateStatus');
     Route::post('/devices/{device}/heartbeat', [DeviceController::class, 'heartbeat'])
@@ -55,31 +100,27 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
         ->name('devices.qr-code');
     Route::get('/devices/offline', [DeviceController::class, 'offlineDevices'])
         ->name('devices.offline');
-    Route::resource('devices', DeviceController::class)->except([
-        'updateStatus', 'heartbeat', 'qr-code', 'offline']);
+    Route::resource('devices', DeviceController::class)->except('updateStatus', 'heartbeat', 'generateQrCode', 'offlineDevices');
 
-     // Earthquake Events Routes - TARUH CUSTOM ROUTES SEBELUM RESOURCE!
+    // Earthquake Events Routes
+    Route::get('/earthquake-events/device/{device}', [EarthquakeEventController::class, 'byDevice'])
+        ->name('earthquake-events.by-device');
+    Route::post('/earthquake-events/simulate', [EarthquakeEventController::class, 'simulate'])
+        ->name('earthquake-events.simulate');
+    Route::get('/earthquake-events/export', [EarthquakeEventController::class, 'export'])
+        ->name('earthquake-events.export');
     Route::get('/earthquake-events/chart-data', [EarthquakeEventController::class, 'chartData'])
         ->name('earthquake-events.chart-data');
     Route::get('/earthquake-events/recent', [EarthquakeEventController::class, 'recentEvents'])
         ->name('earthquake-events.recent');
     Route::get('/earthquake-events/statistics', [EarthquakeEventController::class, 'statistics'])
         ->name('earthquake-events.statistics');
-    Route::post('/earthquake-events/simulate', [EarthquakeEventController::class, 'simulate'])
-        ->name('earthquake-events.simulate');
-    Route::get('/earthquake-events/export', [EarthquakeEventController::class, 'export'])
-        ->name('earthquake-events.export');
     Route::post('/earthquake-events/{event}/send-alert', [EarthquakeEventController::class, 'sendAlert'])
         ->name('earthquake-events.send-alert');
-    Route::get('/earthquake-events/device/{device}', [EarthquakeEventController::class, 'byDevice'])
-        ->name('earthquake-events.by-device');
-
-    // Earthquake Events Resource Route - HARUS DI AKHIR!
-    Route::resource('earthquake-events', EarthquakeEventController::class)->except([
-        'chart-data', 'recent', 'statistics', 'simulate', 'export', 'send-alert', 'by-device'
-    ]);
+    Route::resource('earthquake-events', EarthquakeEventController::class)->except('byDevice', 'simulate', 'export', 'chartData', 'recentEvents', 'statistics', 'sendAlert');
 
     // Device Logs Routes
+
     Route::get('/device-logs/device/{device}', [DeviceLogController::class, 'byDevice'])->name('device-logs.by-device');
     Route::post('/device-logs/clear-old', [DeviceLogController::class, 'clearOldLogs'])->name('device-logs.clear-old');
     Route::get('/device-logs/export', [DeviceLogController::class, 'export'])->name('device-logs.export');
@@ -88,14 +129,7 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('/device-logs/recent', [DeviceLogController::class, 'recentLogs'])->name('device-logs.recent');
     Route::get('/device-logs/statistics', [DeviceLogController::class, 'statistics'])->name('device-logs.statistics');
     Route::get('/device-logs/device/{device}/health', [DeviceLogController::class, 'deviceHealth'])->name('device-logs.health');
-    // HAPUS ROUTE YANG TIDAK ADA METHOD-NYA:
-    // Route::post('/device-logs/bulk-delete', [DeviceLogController::class, 'bulkDelete'])->name('device-logs.bulk-delete');
-    // Route::get('/device-logs/datatable', [DeviceLogController::class, 'datatable'])->name('device-logs.datatable');
-
-
-    Route::resource('device-logs', DeviceLogController::class)->except([
-        'by-device', 'bulk-delete', 'clear-old', 'export', 'simulate', 'chart-data', 'recent', 'statistics', 'health', 'datatable'
-    ]);
+    Route::resource('device-logs', DeviceLogController::class)->except('byDevice', 'clearOldLogs', 'export', 'simulate', 'chartData', 'recentLogs', 'statistics', 'deviceHealth');
 
     // Threshold Settings Routes
     Route::post('/thresholds/order', [ThresholdController::class, 'updateOrder'])
@@ -106,11 +140,9 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
         ->name('thresholds.test-notification');
     Route::get('/thresholds/effectiveness-report', [ThresholdController::class, 'effectivenessReport'])
         ->name('thresholds.effectiveness-report');
-    Route::resource('thresholds', ThresholdController::class)->except([
-        'update-order', 'reset', 'test-notification', 'effectiveness-report'
-    ]);
+    Route::resource('thresholds', ThresholdController::class)->except('updateOrder', 'resetToDefault', 'testNotification', 'effectivenessReport');
 
-     // Settings Routes
+    // Settings Routes
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [SettingController::class, 'index'])->name('index');
         Route::post('/thresholds', [SettingController::class, 'updateThresholds'])->name('updateThresholds');
@@ -124,11 +156,11 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
         Route::get('/system-info', [SettingController::class, 'systemInfo'])->name('systemInfo');
     });
 
+    // Analytics Routes
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
     Route::post('/analytics/custom-report', [AnalyticsController::class, 'customReport'])->name('analytics.custom-report');
     Route::post('/analytics/export', [AnalyticsController::class, 'export'])->name('analytics.export');
     Route::get('/analytics/real-time-stats', [AnalyticsController::class, 'realTimeStats'])->name('analytics.real-time-stats');
-
 
     // Activity Log Routes
     Route::prefix('activity-logs')->group(function () {
@@ -151,25 +183,64 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     });
 });
 
-// Public API for devices (for IoT sensors)
-// Public API for devices (for IoT sensors)
+// ==================== PUBLIC API ROUTES ====================
 Route::prefix('api/v1')->group(function () {
     Route::post('/devices/{uuid}/data', [\App\Http\Controllers\Api\DeviceDataController::class, 'receiveData']);
     Route::post('/devices/{uuid}/bulk-upload', [\App\Http\Controllers\Api\DeviceDataController::class, 'bulkUpload']);
     Route::post('/devices/{uuid}/heartbeat', [\App\Http\Controllers\Api\DeviceDataController::class, 'heartbeat']);
     Route::get('/devices/{uuid}/info', [\App\Http\Controllers\Api\DeviceDataController::class, 'getDeviceInfo']);
     Route::get('/devices/{uuid}/logs', [\App\Http\Controllers\Api\DeviceDataController::class, 'getDeviceLogs']);
-
-    // New detection endpoints
     Route::get('/devices/{uuid}/significant-logs', [\App\Http\Controllers\Api\DeviceDataController::class, 'getSignificantLogs']);
     Route::post('/devices/{uuid}/test-detection', [\App\Http\Controllers\Api\DeviceDataController::class, 'testDetection']);
     Route::get('/devices/{uuid}/detection-stats', [\App\Http\Controllers\Api\DeviceDataController::class, 'detectionStatistics']);
-
-    // Device registration
     Route::post('/devices/register', [\App\Http\Controllers\Api\DeviceDataController::class, 'registerDevice']);
-
-    // Thresholds
     Route::get('/thresholds', [\App\Http\Controllers\Api\DeviceDataController::class, 'getThresholds']);
+
+    Route::get('/activity/recent', function () {
+        try {
+            $activities = \App\Models\ActivityLog::with('user')
+                ->orderBy('created_at', 'desc')
+                ->limit(10)
+                ->get()
+                ->map(function ($activity) {
+                    return [
+                        'id' => $activity->id,
+                        'user_id' => $activity->user_id,
+                        'user' => $activity->user ? [
+                            'name' => $activity->user->name,
+                            'email' => $activity->user->email,
+                            'role' => $activity->user->role
+                        ] : null,
+                        'action' => $activity->action,
+                        'description' => $activity->description,
+                        'model_type' => $activity->model_type,
+                        'model_id' => $activity->model_id,
+                        'ip_address' => $activity->ip_address,
+                        'user_agent' => $activity->user_agent,
+                        'details' => $activity->details,
+                        'created_at' => $activity->created_at->toISOString(),
+                        'time_ago' => $activity->created_at->diffForHumans()
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'activities' => $activities,
+                'count' => $activities->count(),
+                'total' => \App\Models\ActivityLog::count(),
+                'today' => \App\Models\ActivityLog::today()->count()
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching recent activities: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load activities',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    });
+
+    Route::get('/activity/statistics', [ActivityLogController::class, 'statistics']);
 
     // System status
     Route::get('/status', function () {
@@ -192,54 +263,20 @@ Route::prefix('api/v1')->group(function () {
     });
 });
 
-
-// Error testing routes (only in local/dev environment)
+// ==================== ERROR TESTING ROUTES (DEV ONLY) ====================
 if (app()->environment('local')) {
     Route::prefix('_test')->group(function () {
-        Route::get('/error/400', function () {
-            abort(400);
-        });
-
-        Route::get('/error/401', function () {
-            abort(401);
-        });
-
-        Route::get('/error/403', function () {
-            abort(403);
-        });
-
-        Route::get('/error/404', function () {
-            abort(404);
-        });
-
-        Route::get('/error/405', function () {
-            abort(405);
-        });
-
-        Route::get('/error/419', function () {
-            abort(419);
-        });
-
-        Route::get('/error/422', function () {
-            abort(422);
-        });
-
-        Route::get('/error/429', function () {
-            abort(429);
-        });
-
-        Route::get('/error/500', function () {
-            throw new Exception('Test 500 error');
-        });
-
-        Route::get('/error/503', function () {
-            abort(503);
-        });
-
-        Route::get('/error/model', function () {
-            \App\Models\User::findOrFail(999999);
-        });
-
+        Route::get('/error/400', function () { abort(400); });
+        Route::get('/error/401', function () { abort(401); });
+        Route::get('/error/403', function () { abort(403); });
+        Route::get('/error/404', function () { abort(404); });
+        Route::get('/error/405', function () { abort(405); });
+        Route::get('/error/419', function () { abort(419); });
+        Route::get('/error/422', function () { abort(422); });
+        Route::get('/error/429', function () { abort(429); });
+        Route::get('/error/500', function () { throw new Exception('Test 500 error'); });
+        Route::get('/error/503', function () { abort(503); });
+        Route::get('/error/model', function () { \App\Models\User::findOrFail(999999); });
         Route::get('/error/validation', function () {
             throw \Illuminate\Validation\ValidationException::withMessages([
                 'email' => ['The email field is required.'],
@@ -248,4 +285,5 @@ if (app()->environment('local')) {
         });
     });
 }
+
 require __DIR__.'/auth.php';

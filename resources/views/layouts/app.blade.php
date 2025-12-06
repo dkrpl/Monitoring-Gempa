@@ -597,7 +597,7 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider">
-
+            @if(Auth::user()->isAdmin())
             <!-- Nav Items -->
             <div class="list-group list-group-flush">
                 <!-- Dashboard -->
@@ -711,6 +711,51 @@
                     </a>
                 </div>
             </div>
+            @else
+            <!-- Nav Items -->
+            <div class="list-group list-group-flush">
+
+                <!-- Dashboard -->
+                <a href="{{ route('dashboard') }}"
+                   class="list-group-item list-group-item-action {{ request()->routeIs('user.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                    <!-- User Menu -->
+                    <hr class="sidebar-divider">
+                    <div class="sidebar-heading">Monitoring</div>
+
+                    <!-- Events -->
+
+                    <a href="{{ route('user.events.index') }}"
+                        class="list-group-item list-group-item-action {{ request()->routeIs('user.events.index') ? 'active' : '' }}">
+                       <i class="fas fa-fw fa-earth-asia"></i>
+                        <span>Earthquake Events</span>
+                    </a>
+
+                    <!-- Map -->
+                    <a href="{{ route('user.events.map') }}"
+                        class="list-group-item list-group-item-action {{ request()->routeIs('user.events.map') ? 'active' : '' }}">
+                        <i class="fas fa-fw fa-map"></i>
+                            <span>Event Map</span>
+                    </a>
+
+                    <!-- Alerts -->
+                    <a href="{{ route('user.events.alerts') }}"
+                        class="list-group-item list-group-item-action {{ request()->routeIs('user.events.alerts') ? 'active' : '' }}">
+                        <i class="fas fa-fw fa-bell"></i>
+                            <span>Active Alerts</span>
+                    </a>
+
+                    <!-- Statistics -->
+                    <a href="{{ route('user.events.statistics') }}"
+                        class="list-group-item list-group-item-action {{ request()->routeIs('user.events.statistics') ? 'active' : '' }}">
+                         <i class="fas fa-fw fa-chart-bar"></i>
+                            <span>Statistics</span>
+                    </a>
+            </div>
+            @endif
 
             <!-- Sidebar Toggler -->
             <div class="text-center mt-4">
