@@ -4,17 +4,17 @@
 @section('page-title', 'Earthquake Events Monitoring')
 
 @section('action-button')
-    <div class="btn-group" role="group">
-        <a href="{{ route('earthquake-events.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus mr-2"></i>Record Event
-        </a>
-        <button type="button" class="btn btn-warning ml-2" onclick="simulateEvent()">
-            <i class="fas fa-bolt mr-2"></i>Simulate Event
-        </button>
-        <button type="button" class="btn btn-info ml-2" data-toggle="modal" data-target="#exportModal">
-            <i class="fas fa-download mr-2"></i>Export
-        </button>
-    </div>
+<div class="btn-group" role="group">
+    <a href="{{ route('earthquake-events.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus mr-2"></i>Record Event
+    </a>
+    <button type="button" class="btn btn-warning ml-2" onclick="simulateEvent()">
+        <i class="fas fa-bolt mr-2"></i>Simulate Event
+    </button>
+    <button type="button" class="btn btn-info ml-2" data-toggle="modal" data-target="#exportModal">
+        <i class="fas fa-download mr-2"></i>Export
+    </button>
+</div>
 @endsection
 
 @section('content')
@@ -26,7 +26,8 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total Events</div>
+                            Total Events
+                        </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['total'] }}</div>
                     </div>
                     <div class="col-auto">
@@ -43,7 +44,8 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Warning Events</div>
+                            Warning Events
+                        </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['warning'] }}</div>
                     </div>
                     <div class="col-auto">
@@ -60,7 +62,8 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-                            Danger Events</div>
+                            Danger Events
+                        </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['danger'] }}</div>
                     </div>
                     <div class="col-auto">
@@ -77,7 +80,8 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                            Today's Events</div>
+                            Today's Events
+                        </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['today'] }}</div>
                     </div>
                     <div class="col-auto">
@@ -90,34 +94,36 @@
 </div>
 
 <div class="row">
+    <!-- Main Chart -->
     <div class="col-lg-8">
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">Activity Chart (Last 30 Days)</h6>
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshChart()">
+                <h6 class="m-0 font-weight-bold text-primary mb-0">Activity Chart (Last 30 Days)</h6>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshChart()" title="Refresh">
                     <i class="fas fa-sync-alt"></i>
                 </button>
             </div>
             <div class="card-body">
-                <div class="chart-area">
+                <div class="chart-area" style="height: 300px;">
                     <canvas id="eventsChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Recent Activity Sidebar -->
     <div class="col-lg-4">
-        <div class="card shadow mb-4">
+        <div class="card shadow mb-4 h-100">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Recent Activity</h6>
+                <h6 class="m-0 font-weight-bold text-primary mb-0">Recent Activity</h6>
             </div>
-            <div class="card-body">
-                <div class="list-group" id="recentEvents">
-                    <div class="text-center py-3">
+            <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                <div class="list-group list-group-flush" id="recentEvents">
+                    <div class="text-center py-4">
                         <div class="spinner-border text-primary" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
-                        <p class="mt-2 text-muted">Loading recent events...</p>
+                        <p class="mt-2 text-muted mb-0">Loading recent events...</p>
                     </div>
                 </div>
             </div>
@@ -125,13 +131,14 @@
     </div>
 </div>
 
-<div class="row">
+<!-- All Events Table -->
+<div class="row mt-4">
     <div class="col-12">
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">All Earthquake Events</h6>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshEvents()">
+                <h6 class="m-0 font-weight-bold text-primary mb-0">All Earthquake Events</h6>
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshEvents()" title="Refresh">
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </div>
@@ -148,70 +155,74 @@
                     </div>
                 @else
                     <div class="table-responsive">
-                        <table class="table table-bordered data-table" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
+                        <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                            <thead class="thead-light">
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Device</th>
-                                    <th>Magnitude</th>
-                                    <th>Status</th>
-                                    <th>Occurred At</th>
-                                    <th>Location</th>
-                                    <th>Actions</th>
+                                    <th style="width: 5%">ID</th>
+                                    <th style="width: 20%">Device</th>
+                                    <th style="width: 10%">Magnitude</th>
+                                    <th style="width: 10%">Status</th>
+                                    <th style="width: 15%">Occurred At</th>
+                                    <th style="width: 20%">Location</th>
+                                    <th style="width: 20%">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($events as $event)
                                 <tr>
-                                    <td>{{ $event->id }}</td>
-                                    <td>
+                                    <td class="align-middle">{{ $event->id }}</td>
+                                    <td class="align-middle">
                                         <div class="d-flex align-items-center">
-                                            <div class="mr-2">
+                                            <div class="mr-3">
                                                 <i class="fas fa-microchip text-primary"></i>
                                             </div>
                                             <div>
-                                                <strong>{{ $event->device->nama_device }}</strong><br>
+                                                <div class="font-weight-bold">{{ $event->device->nama_device }}</div>
                                                 <small class="text-muted">{{ $event->device->lokasi }}</small>
                                             </div>
                                         </div>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <span class="badge badge-{{ $event->magnitude_color }} p-2">
                                             {{ number_format($event->magnitude, 1) }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <span class="badge badge-{{ $event->status_color }} p-2">
                                             <i class="fas fa-{{ $event->status === 'danger' ? 'fire' : 'exclamation-triangle' }} mr-1"></i>
                                             {{ ucfirst($event->status) }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <div>
-                                            <strong>{{ $event->occurred_at->format('M d, Y') }}</strong><br>
+                                            <div class="font-weight-bold">{{ $event->occurred_at->format('M d, Y') }}</div>
                                             <small class="text-muted">{{ $event->occurred_at->format('H:i:s') }}</small>
                                         </div>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         @if($event->hasLocation())
-                                            <div class="text-success">
-                                                <i class="fas fa-map-marker-alt"></i>
-                                                <small>Lat: {{ number_format($event->latitude, 4) }}</small><br>
-                                                <small>Lng: {{ number_format($event->longitude, 4) }}</small>
+                                            <div>
+                                                <small class="text-success d-block">
+                                                    <i class="fas fa-map-marker-alt mr-1"></i>
+                                                    Lat: {{ number_format($event->latitude, 4) }}
+                                                </small>
+                                                <small class="text-success">
+                                                    Lng: {{ number_format($event->longitude, 4) }}
+                                                </small>
                                             </div>
                                         @else
                                             <span class="text-muted">Not specified</span>
                                         @endif
                                     </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
+                                    <td class="align-middle">
+                                        <div class="btn-group btn-group-sm" role="group">
                                             <a href="{{ route('earthquake-events.show', $event) }}"
-                                               class="btn btn-info btn-sm"
+                                               class="btn btn-info"
                                                title="View Details">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                             <a href="{{ route('earthquake-events.edit', $event) }}"
-                                               class="btn btn-warning btn-sm"
+                                               class="btn btn-warning"
                                                title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
@@ -221,7 +232,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button"
-                                                        class="btn btn-danger btn-sm delete-btn"
+                                                        class="btn btn-danger delete-btn"
                                                         title="Delete">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
@@ -233,11 +244,6 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <!-- Pagination -->
-                    {{-- <div class="d-flex justify-content-center">
-                        {{ $events->links() }}
-                    </div> --}}
                 @endif
             </div>
         </div>
@@ -287,20 +293,22 @@
 
 @push('styles')
 <style>
-    .badge-warning { background: linear-gradient(45deg, #ffc107, #fd7e14); }
-    .badge-danger { background: linear-gradient(45deg, #e74a3b, #d52a1e); }
-    .badge-success { background: linear-gradient(45deg, #1cc88a, #13855c); }
+    .badge-warning {
+        background: linear-gradient(45deg, #ffc107, #fd7e14);
+    }
 
-    .magnitude-badge {
-        font-size: 1.1rem;
-        font-weight: bold;
-        min-width: 60px;
-        text-align: center;
+    .badge-danger {
+        background: linear-gradient(45deg, #e74a3b, #d52a1e);
+    }
+
+    .badge-success {
+        background: linear-gradient(45deg, #1cc88a, #13855c);
     }
 
     .list-group-item {
         border-left: 4px solid transparent;
         transition: all 0.3s;
+        padding: 0.75rem 1rem;
     }
 
     .list-group-item.warning {
@@ -313,37 +321,41 @@
 
     .list-group-item:hover {
         transform: translateX(5px);
+        background-color: #f8f9fa;
     }
 
-     /* Fix pagination size */
-    .pagination {
-        font-size: 0.9rem !important;
+    .btn-group-sm > .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
     }
 
-    .page-link {
-        padding: 0.375rem 0.75rem !important;
-        font-size: 0.9rem !important;
+    .btn-group .btn {
+        margin-right: 2px;
+        border-radius: 4px !important;
     }
 
-    /* Fix DataTables pagination */
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        padding: 0.375rem 0.75rem !important;
-        margin: 0 2px !important;
-        font-size: 0.9rem !important;
+    .btn-group .btn:last-child {
+        margin-right: 0;
     }
 
-    /* Recent events styling */
-    .list-group-item.warning {
-        border-left: 4px solid #ffc107;
+    .table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        border-top: none;
     }
 
-    .list-group-item.danger {
-        border-left: 4px solid #e74a3b;
+    .table td {
+        vertical-align: middle !important;
     }
 
-    .list-group-item .badge {
-        font-size: 0.8rem !important;
-        padding: 0.25rem 0.5rem !important;
+    .chart-area {
+        position: relative;
+        min-height: 300px;
+    }
+
+    .badge {
+        font-weight: 500;
     }
 </style>
 @endpush
@@ -444,40 +456,39 @@
 
                 if (!data.success || !data.events || data.events.length === 0) {
                     container.innerHTML = `
-                        <div class="text-center py-3">
+                        <div class="text-center py-4">
                             <i class="fas fa-check-circle fa-2x text-success mb-3"></i>
-                            <p class="text-muted">No recent events in the last 24 hours</p>
+                            <p class="text-muted mb-0">No recent events in the last 24 hours</p>
                         </div>
                     `;
                     return;
                 }
 
                 let html = '';
-                data.events.forEach(event => {
+                data.events.slice(0, 5).forEach(event => { // Limit to 5 events
                     const timeAgo = event.time_ago || 'Just now';
                     const statusClass = event.status === 'danger' ? 'danger' : 'warning';
                     const statusIcon = event.status === 'danger' ? 'fire' : 'exclamation-triangle';
                     const magnitudeClass = event.magnitude >= 5.0 ? 'danger' : event.magnitude >= 3.0 ? 'warning' : 'success';
 
                     html += `
-                        <div class="list-group-item list-group-item-action ${statusClass}">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1" style="font-size: 0.9rem;">
+                        <div class="list-group-item list-group-item-action ${statusClass} border-bottom">
+                            <div class="d-flex w-100 justify-content-between align-items-start mb-1">
+                                <div class="d-flex align-items-center">
                                     <i class="fas fa-${statusIcon} text-${statusClass} mr-2"></i>
-                                    ${event.device.nama_device}
-                                </h6>
-                                <small class="text-muted">${timeAgo}</small>
+                                    <h6 class="mb-0 font-weight-bold">${event.device.nama_device}</h6>
+                                </div>
+                                <small class="text-muted text-nowrap">${timeAgo}</small>
                             </div>
-                            <p class="mb-1">
-                                <strong>Magnitude:</strong>
-                                <span class="badge badge-${magnitudeClass}" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
-                                    ${parseFloat(event.magnitude).toFixed(1)}
+                            <div class="mb-2">
+                                <span class="badge badge-${magnitudeClass} mr-2">
+                                    Mag: ${parseFloat(event.magnitude).toFixed(1)}
                                 </span>
-                                <span class="badge badge-${statusClass} ml-2" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
+                                <span class="badge badge-${statusClass}">
                                     ${event.status}
                                 </span>
-                            </p>
-                            <small class="text-muted" style="font-size: 0.8rem;">
+                            </div>
+                            <small class="text-muted d-block">
                                 <i class="fas fa-map-marker-alt mr-1"></i>
                                 ${event.device.lokasi}
                             </small>
@@ -492,10 +503,10 @@
                 const container = document.getElementById('recentEvents');
                 if (container) {
                     container.innerHTML = `
-                        <div class="text-center py-3">
+                        <div class="text-center py-4">
                             <i class="fas fa-exclamation-triangle fa-2x text-warning mb-3"></i>
-                            <p class="text-muted">Cannot load recent events</p>
-                            <p class="small text-muted">${error.message}</p>
+                            <p class="text-muted mb-0">Cannot load recent events</p>
+                            <p class="small text-muted mb-3">${error.message}</p>
                             <div class="mt-2">
                                 ${getSampleRecentEvents()}
                             </div>
@@ -535,24 +546,23 @@
             const magnitudeClass = event.magnitude >= 5.0 ? 'danger' : event.magnitude >= 3.0 ? 'warning' : 'success';
 
             html += `
-                <div class="list-group-item list-group-item-action ${statusClass}">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1" style="font-size: 0.9rem;">
+                <div class="list-group-item list-group-item-action ${statusClass} border-bottom">
+                    <div class="d-flex w-100 justify-content-between align-items-start mb-1">
+                        <div class="d-flex align-items-center">
                             <i class="fas fa-${statusIcon} text-${statusClass} mr-2"></i>
-                            ${event.device.nama_device}
-                        </h6>
-                        <small class="text-muted">${event.time_ago}</small>
+                            <h6 class="mb-0 font-weight-bold">${event.device.nama_device}</h6>
+                        </div>
+                        <small class="text-muted text-nowrap">${event.time_ago}</small>
                     </div>
-                    <p class="mb-1">
-                        <strong>Magnitude:</strong>
-                        <span class="badge badge-${magnitudeClass}" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
-                            ${event.magnitude.toFixed(1)}
+                    <div class="mb-2">
+                        <span class="badge badge-${magnitudeClass} mr-2">
+                            Mag: ${event.magnitude.toFixed(1)}
                         </span>
-                        <span class="badge badge-${statusClass} ml-2" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
+                        <span class="badge badge-${statusClass}">
                             ${event.status}
                         </span>
-                    </p>
-                    <small class="text-muted" style="font-size: 0.8rem;">
+                    </div>
+                    <small class="text-muted d-block">
                         <i class="fas fa-map-marker-alt mr-1"></i>
                         ${event.device.lokasi}
                     </small>

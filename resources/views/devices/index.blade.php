@@ -4,14 +4,14 @@
 @section('page-title', 'Device Management')
 
 @section('action-button')
-    <div class="btn-group" role="group">
-        <a href="{{ route('devices.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus mr-2"></i>Add New Device
-        </a>
-        <button type="button" class="btn btn-info ml-2" onclick="checkOfflineDevices()">
-            <i class="fas fa-wifi mr-2"></i>Check Offline
-        </button>
-    </div>
+<div class="btn-group" role="group">
+    <a href="{{ route('devices.create') }}" class="btn btn-primary">
+        <i class="fas fa-plus mr-2"></i>Add New Device
+    </a>
+    <button type="button" class="btn btn-info ml-2" onclick="checkOfflineDevices()">
+        <i class="fas fa-wifi mr-2"></i>Check Offline
+    </button>
+</div>
 @endsection
 
 @section('content')
@@ -23,7 +23,8 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total Devices</div>
+                            Total Devices
+                        </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $devices->total() }}</div>
                     </div>
                     <div class="col-auto">
@@ -40,7 +41,8 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                            Active Devices</div>
+                            Active Devices
+                        </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
                             {{ $devices->where('status', 'aktif')->count() }}
                         </div>
@@ -59,7 +61,8 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Inactive Devices</div>
+                            Inactive Devices
+                        </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
                             {{ $devices->where('status', 'nonaktif')->count() }}
                         </div>
@@ -78,7 +81,8 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                            Total Events</div>
+                            Total Events
+                        </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">
                             {{ $devices->sum('earthquake_events_count') }}
                         </div>
@@ -92,13 +96,14 @@
     </div>
 </div>
 
+<!-- Main Table -->
 <div class="row">
     <div class="col-12">
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">All Devices</h6>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshDevices()">
+                <h6 class="m-0 font-weight-bold text-primary mb-0">All Devices</h6>
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="refreshDevices()" title="Refresh">
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </div>
@@ -115,49 +120,49 @@
                     </div>
                 @else
                     <div class="table-responsive">
-                        <table class="table table-bordered data-table" id="dataTable" width="100%" cellspacing="0">
-                            <thead>
+                        <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                            <thead class="thead-light">
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Device Name</th>
-                                    <th>UUID</th>
-                                    <th>Location</th>
-                                    <th>Status</th>
-                                    <th>Last Seen</th>
-                                    <th>Events</th>
-                                    <th>Actions</th>
+                                    <th style="width: 5%">ID</th>
+                                    <th style="width: 20%">Device Name</th>
+                                    <th style="width: 15%">UUID</th>
+                                    <th style="width: 15%">Location</th>
+                                    <th style="width: 10%">Status</th>
+                                    <th style="width: 15%">Last Seen</th>
+                                    <th style="width: 10%">Events</th>
+                                    <th style="width: 10%">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($devices as $device)
                                 <tr>
-                                    <td>{{ $device->id }}</td>
-                                    <td>
+                                    <td class="align-middle">{{ $device->id }}</td>
+                                    <td class="align-middle">
                                         <div class="d-flex align-items-center">
                                             <div class="mr-3">
                                                 <i class="fas fa-microchip text-primary"></i>
                                             </div>
                                             <div>
-                                                <strong>{{ $device->nama_device }}</strong>
+                                                <div class="font-weight-bold">{{ $device->nama_device }}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <code class="text-muted" style="font-size: 0.8rem;">
                                             {{ substr($device->uuid, 0, 8) }}...
                                         </code>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <i class="fas fa-map-marker-alt text-danger mr-1"></i>
                                         {{ $device->lokasi }}
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         <span class="badge badge-{{ $device->status_color }} p-2">
                                             <i class="fas fa-circle mr-1" style="font-size: 0.5rem;"></i>
                                             {{ ucfirst($device->status) }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="align-middle">
                                         @if($device->last_seen)
                                             <span class="text-muted" title="{{ $device->last_seen }}">
                                                 {{ $device->last_seen->diffForHumans() }}
@@ -166,40 +171,34 @@
                                             <span class="text-muted">Never</span>
                                         @endif
                                     </td>
-                                    <td>
-                                        <div class="d-flex">
-                                            <span class="badge badge-info mr-2" title="Total Events">
+                                    <td class="align-middle">
+                                        <div class="d-flex justify-content-center">
+                                            <span class="badge badge-info mr-1" title="Total Events">
                                                 {{ $device->earthquake_events_count }}
                                             </span>
-                                            <span class="badge badge-warning mr-2" title="Logs">
+                                            <span class="badge badge-warning" title="Logs">
                                                 {{ $device->logs_count }}
                                             </span>
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
+                                    <td class="align-middle">
+                                        <div class="btn-group btn-group-sm" role="group">
                                             <a href="{{ route('devices.show', $device) }}"
-                                               class="btn btn-info btn-sm"
+                                               class="btn btn-info"
                                                title="View Details">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                             <a href="{{ route('devices.edit', $device) }}"
-                                               class="btn btn-warning btn-sm"
+                                               class="btn btn-warning"
                                                title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <button type="button"
-                                                    class="btn btn-{{ $device->status === 'aktif' ? 'secondary' : 'success' }} btn-sm status-btn"
+                                                    class="btn btn-{{ $device->status === 'aktif' ? 'secondary' : 'success' }} status-btn"
                                                     data-device-id="{{ $device->id }}"
                                                     data-status="{{ $device->status }}"
                                                     title="{{ $device->status === 'aktif' ? 'Deactivate' : 'Activate' }}">
                                                 <i class="fas fa-power-off"></i>
-                                            </button>
-                                            <button type="button"
-                                                    class="btn btn-primary btn-sm qr-btn"
-                                                    data-device-id="{{ $device->id }}"
-                                                    title="QR Code">
-                                                <i class="fas fa-qrcode"></i>
                                             </button>
                                             <form action="{{ route('devices.destroy', $device) }}"
                                                   method="POST"
@@ -207,7 +206,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button"
-                                                        class="btn btn-danger btn-sm delete-btn"
+                                                        class="btn btn-danger delete-btn"
                                                         title="Delete">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
@@ -221,7 +220,7 @@
                     </div>
 
                     <!-- Pagination -->
-                    <div class="d-flex justify-content-center">
+                    <div class="d-flex justify-content-center mt-3">
                         {{ $devices->links() }}
                     </div>
                 @endif
@@ -232,16 +231,17 @@
 
 <!-- Quick Stats Row -->
 <div class="row">
+    <!-- Device Status Chart -->
     <div class="col-lg-6">
-        <div class="card shadow mb-4">
+        <div class="card shadow mb-4 h-100">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Device Status Distribution</h6>
+                <h6 class="m-0 font-weight-bold text-primary mb-0">Device Status Distribution</h6>
             </div>
             <div class="card-body">
-                <div class="chart-pie pt-4">
+                <div class="chart-pie pt-2" style="height: 200px;">
                     <canvas id="deviceStatusChart"></canvas>
                 </div>
-                <div class="mt-4 text-center small">
+                <div class="mt-3 text-center small">
                     <span class="mr-3">
                         <i class="fas fa-circle text-success"></i> Active
                     </span>
@@ -253,77 +253,46 @@
         </div>
     </div>
 
+    <!-- Recently Active Devices -->
     <div class="col-lg-6">
-        <div class="card shadow mb-4">
+        <div class="card shadow mb-4 h-100">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">Recently Active Devices</h6>
+                <h6 class="m-0 font-weight-bold text-primary mb-0">Recently Active Devices</h6>
                 <small class="text-muted">Last 24 hours</small>
             </div>
-            <div class="card-body">
-                <div class="list-group">
-                    @foreach($devices->where('status', 'aktif')->sortByDesc('last_seen')->take(5) as $device)
-                        <div class="list-group-item list-group-item-action">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">
-                                    <i class="fas fa-microchip text-primary mr-2"></i>
-                                    {{ $device->nama_device }}
-                                </h6>
-                                <small class="text-success">
-                                    <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
-                                    Online
+            <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                @if($devices->where('status', 'aktif')->isEmpty())
+                    <div class="text-center py-4">
+                        <i class="fas fa-wifi-slash fa-2x text-gray-300 mb-3"></i>
+                        <p class="text-gray-500 mb-0">No active devices found</p>
+                    </div>
+                @else
+                    <div class="list-group list-group-flush">
+                        @foreach($devices->where('status', 'aktif')->sortByDesc('last_seen')->take(8) as $device)
+                            <div class="list-group-item list-group-item-action border-bottom py-2 px-3">
+                                <div class="d-flex w-100 justify-content-between align-items-start mb-1">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-microchip text-primary mr-2"></i>
+                                        <h6 class="mb-0 font-weight-bold">{{ $device->nama_device }}</h6>
+                                    </div>
+                                    <small class="text-success">
+                                        <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                                        Online
+                                    </small>
+                                </div>
+                                <div class="mb-1">
+                                    <small class="text-muted">
+                                        <i class="fas fa-map-marker-alt mr-1"></i>{{ $device->lokasi }}
+                                    </small>
+                                </div>
+                                <small class="text-muted d-block">
+                                    <i class="far fa-clock mr-1"></i>
+                                    Last seen: {{ $device->last_seen ? $device->last_seen->diffForHumans() : 'Never' }}
                                 </small>
                             </div>
-                            <p class="mb-1">
-                                <i class="fas fa-map-marker-alt text-danger mr-1"></i>
-                                {{ $device->lokasi }}
-                            </p>
-                            <small class="text-muted">
-                                Last seen: {{ $device->last_seen ? $device->last_seen->diffForHumans() : 'Never' }}
-                            </small>
-                        </div>
-                    @endforeach
-
-                    @if($devices->where('status', 'aktif')->isEmpty())
-                        <div class="text-center py-4">
-                            <i class="fas fa-wifi-slash fa-2x text-gray-300 mb-3"></i>
-                            <p class="text-gray-500">No active devices found</p>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- QR Code Modal -->
-<div class="modal fade" id="qrCodeModal" tabindex="-1" role="dialog" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="qrCodeModalLabel">Device QR Code</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body text-center">
-                <div id="qrCodeContainer">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
+                        @endforeach
                     </div>
-                    <p class="mt-2">Generating QR Code...</p>
-                </div>
-                <div id="qrCodeInfo" class="mt-3" style="display: none;">
-                    <h6>Device Information</h6>
-                    <p class="mb-1"><strong>Name:</strong> <span id="qrDeviceName"></span></p>
-                    <p class="mb-1"><strong>UUID:</strong> <span id="qrDeviceUuid" class="text-muted small"></span></p>
-                    <p class="mb-0"><strong>Location:</strong> <span id="qrDeviceLocation"></span></p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="downloadQrBtn" style="display: none;">
-                    <i class="fas fa-download mr-2"></i>Download QR Code
-                </button>
+                @endif
             </div>
         </div>
     </div>
@@ -332,9 +301,17 @@
 
 @push('styles')
 <style>
-    .badge-success { background: linear-gradient(45deg, #28a745, #20c997); }
-    .badge-warning { background: linear-gradient(45deg, #ffc107, #fd7e14); }
-    .badge-secondary { background: linear-gradient(45deg, #6c757d, #495057); }
+    .badge-success {
+        background: linear-gradient(45deg, #28a745, #20c997);
+    }
+
+    .badge-warning {
+        background: linear-gradient(45deg, #ffc107, #fd7e14);
+    }
+
+    .badge-secondary {
+        background: linear-gradient(45deg, #6c757d, #495057);
+    }
 
     .list-group-item {
         border-left: 4px solid transparent;
@@ -344,6 +321,12 @@
     .list-group-item:hover {
         border-left-color: #4e73df;
         transform: translateX(5px);
+        background-color: #f8f9fa;
+    }
+
+    .btn-group-sm > .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
     }
 
     .btn-group .btn {
@@ -355,16 +338,19 @@
         margin-right: 0;
     }
 
-    .qr-code-placeholder {
-        width: 200px;
-        height: 200px;
-        background: #f8f9fa;
-        border: 2px dashed #dee2e6;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
+    .table th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        border-top: none;
+    }
+
+    .table td {
+        vertical-align: middle !important;
+    }
+
+    .chart-pie {
+        position: relative;
     }
 </style>
 @endpush
@@ -458,49 +444,7 @@
                 });
             });
         });
-
-        // QR Code generation
-        const qrButtons = document.querySelectorAll('.qr-btn');
-        qrButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const deviceId = this.dataset.deviceId;
-                generateQRCode(deviceId);
-            });
-        });
     });
-
-    function generateQRCode(deviceId) {
-        $('#qrCodeModal').modal('show');
-
-        fetch(`/devices/${deviceId}/qr-code`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Simulate QR code generation
-                    setTimeout(() => {
-                        const qrContainer = document.getElementById('qrCodeContainer');
-                        qrContainer.innerHTML = `
-                            <div class="qr-code-placeholder mb-3">
-                                <i class="fas fa-qrcode fa-4x text-primary"></i>
-                            </div>
-                            <p class="text-muted">Scan to view device details</p>
-                        `;
-
-                        // Parse QR data for display
-                        const qrData = JSON.parse(data.qr_data);
-                        document.getElementById('qrDeviceName').textContent = qrData.name;
-                        document.getElementById('qrDeviceUuid').textContent = qrData.uuid;
-                        document.getElementById('qrDeviceLocation').textContent = qrData.location;
-
-                        document.getElementById('qrCodeInfo').style.display = 'block';
-                        document.getElementById('downloadQrBtn').style.display = 'block';
-                    }, 1000);
-                }
-            })
-            .catch(error => {
-                Swal.fire('Error!', 'Failed to generate QR code.', 'error');
-            });
-    }
 
     function checkOfflineDevices() {
         Swal.fire({

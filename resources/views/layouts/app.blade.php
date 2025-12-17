@@ -742,11 +742,11 @@
                     </a>
 
                     <!-- Alerts -->
-                    <a href="{{ route('user.events.alerts') }}"
+                    {{-- <a href="{{ route('user.events.alerts') }}"
                         class="list-group-item list-group-item-action {{ request()->routeIs('user.events.alerts') ? 'active' : '' }}">
                         <i class="fas fa-fw fa-bell"></i>
                             <span>Active Alerts</span>
-                    </a>
+                    </a> --}}
 
                     <!-- Statistics -->
                     <a href="{{ route('user.events.statistics') }}"

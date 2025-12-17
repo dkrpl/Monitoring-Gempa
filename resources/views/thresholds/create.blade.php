@@ -181,7 +181,7 @@
 
                     <div class="row">
                         <div class="col-12">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
                                 <i class="fas fa-save mr-2"></i>Create Threshold
                             </button>
                             <button type="button" class="btn btn-outline-info" onclick="previewThreshold()">
@@ -329,6 +329,11 @@
         border: 1px solid #ced4da;
         border-left: none;
     }
+
+    .required::after {
+        content: " *";
+        color: #e74a3b;
+    }
 </style>
 @endpush
 
@@ -341,14 +346,14 @@
         const description = document.getElementById('description').value;
 
         // Set default colors based on description
-        if (description && !colorInput.value.startsWith('#')) {
+        if (description) {
             const defaultColors = {
                 'warning': '#ffc107',
                 'danger': '#e74a3b',
                 'critical': '#343a40'
             };
 
-            if (defaultColors[description]) {
+            if (defaultColors[description] && (!colorInput.value || colorInput.value === '#6c757d')) {
                 colorInput.value = defaultColors[description];
             }
         }
@@ -379,9 +384,10 @@
         // Update status badge
         const previewStatus = document.getElementById('previewStatus');
         if (description) {
+            const displayName = description.charAt(0).toUpperCase() + description.slice(1);
             previewStatus.innerHTML = `
                 <span class="badge" style="background-color: ${color}; color: white; font-size: 1.2rem; padding: 10px 20px;">
-                    ${description.toUpperCase()}
+                    ${displayName}
                 </span>
             `;
         } else {
@@ -415,7 +421,11 @@
         const magnitude = document.getElementById('min_value').value;
 
         if (!description || !magnitude) {
-            Swal.fire('Error!', 'Please fill in Status Name and Minimum Magnitude first.', 'error');
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please fill in Status Name and Minimum Magnitude first.'
+            });
             return;
         }
 
@@ -437,22 +447,16 @@
 
         if (!description || !magnitude) {
             e.preventDefault();
-            Swal.fire('Error!', 'Please fill all required fields.', 'error');
-            return;
-        }
-
-        // Check for duplicate magnitude values
-        const magnitudeValue = parseFloat(magnitude);
-        const existingMagnitudes = @json($thresholds->pluck('min_value')->toArray());
-
-        if (existingMagnitudes.includes(magnitudeValue)) {
-            e.preventDefault();
-            Swal.fire('Error!', 'A threshold with this magnitude value already exists.', 'error');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Please fill all required fields.'
+            });
             return;
         }
 
         // Show loading
-        const submitBtn = this.querySelector('button[type="submit"]');
+        const submitBtn = document.getElementById('submitBtn');
         const originalText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
         submitBtn.disabled = true;
@@ -464,6 +468,9 @@
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
         updateColorPreview();
+
+        // Initialize preview values based on form inputs
+        updatePreview();
     });
 </script>
 @endpush

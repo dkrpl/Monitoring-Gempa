@@ -220,18 +220,13 @@
                             <small>Share</small>
                         </button>
                     </div>
-                    <div class="col-6">
+                    <div class="col-12">
                         <button type="button" class="btn btn-outline-success btn-block" onclick="generateReport()">
                             <i class="fas fa-file-pdf"></i><br>
                             <small>Generate Report</small>
                         </button>
                     </div>
-                    <div class="col-6">
-                        <button type="button" class="btn btn-outline-warning btn-block" onclick="sendAlert()">
-                            <i class="fas fa-bell"></i><br>
-                            <small>Send Alert</small>
-                        </button>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -401,53 +396,6 @@
         });
     }
 
-    function sendAlert() {
-        Swal.fire({
-            title: 'Send Alert?',
-            text: 'This will send an alert notification about this earthquake event.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Send Alert'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch('/api/send-alert', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        event_id: @json($earthquakeEvent->id),
-                        message: `Earthquake Alert: Magnitude ${@json($earthquakeEvent->magnitude)} detected`
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire(
-                            'Alert Sent!',
-                            'The earthquake alert has been sent successfully.',
-                            'success'
-                        );
-                    } else {
-                        Swal.fire(
-                            'Error!',
-                            'Failed to send alert.',
-                            'error'
-                        );
-                    }
-                })
-                .catch(error => {
-                    Swal.fire(
-                        'Error!',
-                        'Failed to send alert.',
-                        'error'
-                    );
-                });
-            }
-        });
-    }
+
 </script>
 @endpush

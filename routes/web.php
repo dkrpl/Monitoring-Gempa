@@ -115,9 +115,7 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
         ->name('earthquake-events.recent');
     Route::get('/earthquake-events/statistics', [EarthquakeEventController::class, 'statistics'])
         ->name('earthquake-events.statistics');
-    Route::post('/earthquake-events/{event}/send-alert', [EarthquakeEventController::class, 'sendAlert'])
-        ->name('earthquake-events.send-alert');
-    Route::resource('earthquake-events', EarthquakeEventController::class)->except('byDevice', 'simulate', 'export', 'chartData', 'recentEvents', 'statistics', 'sendAlert');
+    Route::resource('earthquake-events', EarthquakeEventController::class)->except('byDevice', 'simulate', 'export', 'chartData', 'recentEvents', 'statistics');
 
     // Device Logs Routes
 

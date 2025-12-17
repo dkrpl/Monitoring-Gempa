@@ -32,11 +32,6 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="notifications-tab" data-toggle="pill" data-target="#notifications" type="button">
-                            <i class="fas fa-bell mr-2"></i>Notifications
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="security-tab" data-toggle="pill" data-target="#security" type="button">
                             <i class="fas fa-shield-alt mr-2"></i>Security
                         </button>
@@ -54,6 +49,7 @@
         <div class="tab-content" id="settingsTabContent">
             <!-- Thresholds Tab -->
             <div class="tab-pane fade show active" id="thresholds" role="tabpanel">
+                <!-- Thresholds content remains the same -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">
@@ -187,6 +183,7 @@
 
             <!-- System Settings Tab -->
             <div class="tab-pane fade" id="system" role="tabpanel">
+                <!-- System settings content remains the same -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">
@@ -383,217 +380,17 @@
                 </div>
             </div>
 
-            <!-- Notifications Tab -->
+            <!-- Notifications Tab (REMOVED from navigation but content kept for reference) -->
+            <!-- This tab content is commented out since it's removed from navigation -->
+            {{--
             <div class="tab-pane fade" id="notifications" role="tabpanel">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-bell mr-2"></i>Notification Settings
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <form id="notificationsForm" action="{{ route('settings.updateNotifications') }}" method="POST">
-                            @csrf
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <h5 class="mb-3"><i class="fas fa-envelope mr-2"></i>Email Notifications</h5>
-
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               id="enable_email_alerts"
-                                               name="enable_email_alerts"
-                                               value="1"
-                                               {{ ($settings['enable_email_alerts'] ?? true) ? 'checked' : '' }}>
-                                        <label class="form-check-label font-weight-bold" for="enable_email_alerts">
-                                            Enable Email Alerts
-                                        </label>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="alert_email" class="font-weight-bold">Alert Email Address</label>
-                                        <input type="email"
-                                               class="form-control"
-                                               id="alert_email"
-                                               name="alert_email"
-                                               value="{{ old('alert_email', $settings['alert_email'] ?? '') }}"
-                                               required>
-                                        <small class="form-text text-muted">Email address to send alerts to</small>
-                                    </div>
-
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               id="notify_warning"
-                                               name="notify_warning"
-                                               value="1"
-                                               {{ ($settings['notify_warning'] ?? true) ? 'checked' : '' }}>
-                                        <label class="form-check-label font-weight-bold" for="notify_warning">
-                                            Notify for Warning Events
-                                        </label>
-                                    </div>
-
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               id="notify_danger"
-                                               name="notify_danger"
-                                               value="1"
-                                               {{ ($settings['notify_danger'] ?? true) ? 'checked' : '' }}>
-                                        <label class="form-check-label font-weight-bold" for="notify_danger">
-                                            Notify for Danger Events
-                                        </label>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="email_template_warning" class="font-weight-bold">Warning Email Template</label>
-                                        <textarea class="form-control"
-                                                  id="email_template_warning"
-                                                  name="email_template_warning"
-                                                  rows="3">{{ old('email_template_warning', $settings['email_template_warning'] ?? '') }}</textarea>
-                                        <small class="form-text text-muted">
-                                            Available variables: {magnitude}, {location}, {device}, {time}
-                                        </small>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="email_template_danger" class="font-weight-bold">Danger Email Template</label>
-                                        <textarea class="form-control"
-                                                  id="email_template_danger"
-                                                  name="email_template_danger"
-                                                  rows="3">{{ old('email_template_danger', $settings['email_template_danger'] ?? '') }}</textarea>
-                                        <small class="form-text text-muted">
-                                            Available variables: {magnitude}, {location}, {device}, {time}
-                                        </small>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <h5 class="mb-3"><i class="fas fa-mobile-alt mr-2"></i>SMS & Push Notifications</h5>
-
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               id="enable_sms_alerts"
-                                               name="enable_sms_alerts"
-                                               value="1"
-                                               {{ ($settings['enable_sms_alerts'] ?? false) ? 'checked' : '' }}>
-                                        <label class="form-check-label font-weight-bold" for="enable_sms_alerts">
-                                            Enable SMS Alerts
-                                        </label>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="alert_sms" class="font-weight-bold">SMS Phone Number</label>
-                                        <input type="text"
-                                               class="form-control"
-                                               id="alert_sms"
-                                               name="alert_sms"
-                                               value="{{ old('alert_sms', $settings['alert_sms'] ?? '') }}">
-                                        <small class="form-text text-muted">Phone number for SMS alerts (with country code)</small>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="sms_template_warning" class="font-weight-bold">Warning SMS Template</label>
-                                        <textarea class="form-control"
-                                                  id="sms_template_warning"
-                                                  name="sms_template_warning"
-                                                  rows="2">{{ old('sms_template_warning', $settings['sms_template_warning'] ?? '') }}</textarea>
-                                        <small class="form-text text-muted">Maximum 160 characters</small>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="sms_template_danger" class="font-weight-bold">Danger SMS Template</label>
-                                        <textarea class="form-control"
-                                                  id="sms_template_danger"
-                                                  name="sms_template_danger"
-                                                  rows="2">{{ old('sms_template_danger', $settings['sms_template_danger'] ?? '') }}</textarea>
-                                        <small class="form-text text-muted">Maximum 160 characters</small>
-                                    </div>
-
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               id="push_notifications"
-                                               name="push_notifications"
-                                               value="1"
-                                               {{ ($settings['push_notifications'] ?? true) ? 'checked' : '' }}>
-                                        <label class="form-check-label font-weight-bold" for="push_notifications">
-                                            Enable Push Notifications
-                                        </label>
-                                    </div>
-
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               id="notify_device_offline"
-                                               name="notify_device_offline"
-                                               value="1"
-                                               {{ ($settings['notify_device_offline'] ?? true) ? 'checked' : '' }}>
-                                        <label class="form-check-label font-weight-bold" for="notify_device_offline">
-                                            Notify when Device Goes Offline
-                                        </label>
-                                    </div>
-
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               id="notify_device_online"
-                                               name="notify_device_online"
-                                               value="1"
-                                               {{ ($settings['notify_device_online'] ?? false) ? 'checked' : '' }}>
-                                        <label class="form-check-label font-weight-bold" for="notify_device_online">
-                                            Notify when Device Comes Online
-                                        </label>
-                                    </div>
-
-                                    <h5 class="mt-4 mb-3"><i class="fas fa-plug mr-2"></i>Third-Party Integrations</h5>
-
-                                    <div class="form-group">
-                                        <label for="slack_webhook" class="font-weight-bold">Slack Webhook URL</label>
-                                        <input type="url"
-                                               class="form-control"
-                                               id="slack_webhook"
-                                               name="slack_webhook"
-                                               value="{{ old('slack_webhook', $settings['slack_webhook'] ?? '') }}">
-                                        <small class="form-text text-muted">Webhook URL for Slack notifications</small>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="telegram_bot_token" class="font-weight-bold">Telegram Bot Token</label>
-                                        <input type="text"
-                                               class="form-control"
-                                               id="telegram_bot_token"
-                                               name="telegram_bot_token"
-                                               value="{{ old('telegram_bot_token', $settings['telegram_bot_token'] ?? '') }}">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="telegram_chat_id" class="font-weight-bold">Telegram Chat ID</label>
-                                        <input type="text"
-                                               class="form-control"
-                                               id="telegram_chat_id"
-                                               name="telegram_chat_id"
-                                               value="{{ old('telegram_chat_id', $settings['telegram_chat_id'] ?? '') }}">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row mt-4">
-                                <div class="col-12">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save mr-2"></i>Save Notification Settings
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <!-- Notifications content removed -->
             </div>
+            --}}
 
             <!-- Security Tab -->
             <div class="tab-pane fade" id="security" role="tabpanel">
+                <!-- Security settings content remains the same -->
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">
@@ -939,10 +736,11 @@
         submitForm(this, 'system');
     });
 
-    document.getElementById('notificationsForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        submitForm(this, 'notifications');
-    });
+    // Removed notifications form handler since the tab is removed
+    // document.getElementById('notificationsForm').addEventListener('submit', function(e) {
+    //     e.preventDefault();
+    //     submitForm(this, 'notifications');
+    // });
 
     document.getElementById('securityForm').addEventListener('submit', function(e) {
         e.preventDefault();

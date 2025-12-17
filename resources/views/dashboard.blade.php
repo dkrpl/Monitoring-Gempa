@@ -1357,7 +1357,7 @@
             }
         });
 
-        fetch('/api/v1/detections/test', {
+        fetch('/earthquake-events/simulate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

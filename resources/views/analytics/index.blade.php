@@ -4,29 +4,30 @@
 @section('page-title', 'Analytics Dashboard')
 
 @section('action-button')
-    <div class="btn-group" role="group">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#customReportModal">
-            <i class="fas fa-chart-line mr-2"></i>Custom Report
-        </button>
-        <button type="button" class="btn btn-info ml-2" data-toggle="modal" data-target="#exportModal">
-            <i class="fas fa-download mr-2"></i>Export Data
-        </button>
-        <button type="button" class="btn btn-success ml-2" onclick="refreshAnalytics()">
-            <i class="fas fa-sync-alt mr-2"></i>Refresh
-        </button>
-    </div>
+<div class="btn-group" role="group">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#customReportModal">
+        <i class="fas fa-chart-line mr-2"></i>Custom Report
+    </button>
+    <button type="button" class="btn btn-info ml-2" data-toggle="modal" data-target="#exportModal">
+        <i class="fas fa-download mr-2"></i>Export Data
+    </button>
+    <button type="button" class="btn btn-success ml-2" onclick="refreshAnalytics()">
+        <i class="fas fa-sync-alt mr-2"></i>Refresh
+    </button>
+</div>
 @endsection
 
 @section('content')
+<!-- Statistics Cards -->
 <div class="row">
-    <!-- Statistics Cards -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total Events</div>
+                            Total Events
+                        </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['total_events']) }}</div>
                         <div class="mt-2 mb-0 text-muted text-xs">
                             <span class="text-success mr-2">
@@ -48,7 +49,8 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                            Active Devices</div>
+                            Active Devices
+                        </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['active_devices'] }}/{{ $stats['total_devices'] }}</div>
                         <div class="mt-2 mb-0 text-muted text-xs">
                             <span class="text-success mr-2">
@@ -70,7 +72,8 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Warning Events</div>
+                            Warning Events
+                        </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['warning_count']) }}</div>
                         <div class="mt-2 mb-0 text-muted text-xs">
                             <span class="text-warning mr-2">
@@ -92,7 +95,8 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-                            Danger Events</div>
+                            Danger Events
+                        </div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($stats['danger_count']) }}</div>
                         <div class="mt-2 mb-0 text-muted text-xs">
                             <span class="text-danger mr-2">
@@ -109,12 +113,13 @@
     </div>
 </div>
 
+<!-- Main Charts Row -->
 <div class="row">
     <!-- Events Trend Chart -->
-    <div class="col-xl-8 col-lg-7">
-        <div class="card shadow mb-4">
+    <div class="col-xl-8 col-lg-7 mb-4">
+        <div class="card shadow h-100">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                <h6 class="m-0 font-weight-bold text-primary">Earthquake Events Trend (Last 30 Days)</h6>
+                <h6 class="m-0 font-weight-bold text-primary mb-0">Events Trend (Last 30 Days)</h6>
                 <div class="dropdown no-arrow">
                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown">
                         <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -128,7 +133,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="chart-area">
+                <div class="chart-area" style="height: 300px;">
                     <canvas id="eventsChart"></canvas>
                 </div>
             </div>
@@ -136,24 +141,24 @@
     </div>
 
     <!-- Magnitude Distribution -->
-    <div class="col-xl-4 col-lg-5">
-        <div class="card shadow mb-4">
+    <div class="col-xl-4 col-lg-5 mb-4">
+        <div class="card shadow h-100">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Magnitude Distribution</h6>
+                <h6 class="m-0 font-weight-bold text-primary mb-0">Magnitude Distribution</h6>
             </div>
             <div class="card-body">
-                <div class="chart-pie pt-4">
+                <div class="chart-pie pt-2" style="height: 220px;">
                     <canvas id="magnitudeChart"></canvas>
                 </div>
-                <div class="mt-4 text-center small">
-                    <span class="mr-2">
-                        <i class="fas fa-circle text-success"></i> 0-2.9
+                <div class="mt-3 text-center small">
+                    <span class="mr-2 d-inline-block mb-1">
+                        <i class="fas fa-circle text-success mr-1"></i>0-2.9
                     </span>
-                    <span class="mr-2">
-                        <i class="fas fa-circle text-warning"></i> 3.0-4.9
+                    <span class="mr-2 d-inline-block mb-1">
+                        <i class="fas fa-circle text-warning mr-1"></i>3.0-4.9
                     </span>
-                    <span class="mr-2">
-                        <i class="fas fa-circle text-danger"></i> 5.0+
+                    <span class="d-inline-block mb-1">
+                        <i class="fas fa-circle text-danger mr-1"></i>5.0+
                     </span>
                 </div>
             </div>
@@ -161,129 +166,122 @@
     </div>
 </div>
 
+<!-- Second Charts Row -->
 <div class="row">
     <!-- Hourly Activity -->
-    <div class="col-xl-6 col-lg-6">
-        <div class="card shadow mb-4">
+    <div class="col-xl-6 col-lg-6 mb-4">
+        <div class="card shadow h-100">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Hourly Activity Pattern</h6>
+                <h6 class="m-0 font-weight-bold text-primary mb-0">Hourly Activity Pattern</h6>
             </div>
             <div class="card-body">
-                <div class="chart-bar">
+                <div class="chart-bar" style="height: 300px;">
                     <canvas id="hourlyChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Device Activity -->
-<div class="col-xl-6 col-lg-6">
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Top Active Devices</h6>
-            <a href="{{ route('devices.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>Device</th>
-                            <th>Events</th>
-                            <th>Avg Magnitude</th>
-                            <th>Max Magnitude</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($topDevices as $device)
-                        <tr>
-                            <td>
-                                <div>
-                                    <strong>{{ $device->nama_device }}</strong><br>
-                                    <small class="text-muted">{{ $device->lokasi }}</small>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge badge-primary">{{ $device->event_count }}</span>
-                            </td>
-                            <td>
-                                <span class="badge badge-{{ $device->avg_magnitude >= 5.0 ? 'danger' : ($device->avg_magnitude >= 3.0 ? 'warning' : 'success') }}">
-                                    {{ number_format($device->avg_magnitude, 1) }}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge badge-{{ $device->max_magnitude >= 5.0 ? 'danger' : ($device->max_magnitude >= 3.0 ? 'warning' : 'success') }}">
-                                    {{ number_format($device->max_magnitude, 1) }}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge badge-{{ $device->status_color }}">
-                                    {{ ucfirst($device->status) }}
-                                </span>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    <!-- Status Distribution -->
+    <div class="col-xl-6 col-lg-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary mb-0">Status Distribution</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="chart-pie pt-2" style="height: 220px;">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                        <div class="mt-3 text-center small">
+                            <div class="mb-1">
+                                <i class="fas fa-circle text-warning mr-1"></i>Warning
+                            </div>
+                            <div class="mb-1">
+                                <i class="fas fa-circle text-danger mr-1"></i>Danger
+                            </div>
+                            <div>
+                                <i class="fas fa-circle text-success mr-1"></i>Normal
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mt-4">
+                            <h6 class="font-weight-bold mb-3">Average Magnitude</h6>
+                            <ul class="list-unstyled">
+                                @foreach($chartData['status_distribution']['avg_magnitudes'] as $index => $avg)
+                                <li class="mb-3 d-flex align-items-center">
+                                    <i class="fas fa-circle text-{{ $chartData['status_distribution']['colors'][$index] }} mr-2"></i>
+                                    <div>
+                                        <strong>{{ $chartData['status_distribution']['labels'][$index] }}</strong>
+                                        <div class="text-muted small">{{ $avg }}</div>
+                                    </div>
+                                </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Data Tables Row -->
 <div class="row">
-    <!-- Recent Events -->
-    <div class="col-xl-8 col-lg-7">
-        <div class="card shadow mb-4">
+    <!-- Top Active Devices -->
+    <div class="col-xl-6 col-lg-6 mb-4">
+        <div class="card shadow h-100">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">Recent Earthquake Events</h6>
-                <a href="{{ route('earthquake-events.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                <h6 class="m-0 font-weight-bold text-primary mb-0">Top Active Devices</h6>
+                <a href="{{ route('devices.index') }}" class="btn btn-sm btn-outline-primary py-1 px-3">
+                    View All
+                </a>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0" style="max-height: 320px; overflow-y: auto;">
                 <div class="table-responsive">
-                    <table class="table table-bordered" width="100%" cellspacing="0">
-                        <thead>
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead class="thead-light">
                             <tr>
-                                <th>Time</th>
-                                <th>Device</th>
-                                <th>Magnitude</th>
-                                <th>Status</th>
-                                <th>Location</th>
+                                <th style="width: 30%">Device</th>
+                                <th style="width: 15%">Events</th>
+                                <th style="width: 20%">Avg Magnitude</th>
+                                <th style="width: 20%">Max Magnitude</th>
+                                <th style="width: 15%">Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($recentEvents as $event)
+                            @foreach($topDevices as $device)
                             <tr>
-                                <td>
-                                    <div>
-                                        <strong>{{ $event->occurred_at->format('M d, Y') }}</strong><br>
-                                        <small class="text-muted">{{ $event->occurred_at->format('H:i:s') }}</small>
+                                <td class="align-middle">
+                                    <div class="d-flex align-items-center">
+                                        <div class="mr-2">
+                                            <i class="fas fa-microchip text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-weight-bold">{{ $device->nama_device }}</div>
+                                            <small class="text-muted">{{ Str::limit($device->lokasi, 20) }}</small>
+                                        </div>
                                     </div>
                                 </td>
-                                <td>
-                                    <a href="{{ route('devices.show', $event->device_id) }}">
-                                        {{ $event->device->nama_device }}
-                                    </a>
+                                <td class="align-middle text-center">
+                                    <span class="badge badge-primary py-1 px-2">{{ $device->event_count }}</span>
                                 </td>
-                                <td>
-                                    <span class="badge badge-{{ $event->magnitude_color }} p-2">
-                                        {{ number_format($event->magnitude, 1) }}
+                                <td class="align-middle text-center">
+                                    <span class="badge badge-{{ $device->avg_magnitude >= 5.0 ? 'danger' : ($device->avg_magnitude >= 3.0 ? 'warning' : 'success') }} py-1 px-2">
+                                        {{ number_format($device->avg_magnitude, 1) }}
                                     </span>
                                 </td>
-                                <td>
-                                    <span class="badge badge-{{ $event->status_color }}">
-                                        {{ ucfirst($event->status) }}
+                                <td class="align-middle text-center">
+                                    <span class="badge badge-{{ $device->max_magnitude >= 5.0 ? 'danger' : ($device->max_magnitude >= 3.0 ? 'warning' : 'success') }} py-1 px-2">
+                                        {{ number_format($device->max_magnitude, 1) }}
                                     </span>
                                 </td>
-                                <td>
-                                    @if($event->hasLocation())
-                                        <small class="text-success">
-                                            <i class="fas fa-map-marker-alt"></i>
-                                            {{ number_format($event->latitude, 2) }}, {{ number_format($event->longitude, 2) }}
-                                        </small>
-                                    @else
-                                        <span class="text-muted">Not specified</span>
-                                    @endif
+                                <td class="align-middle text-center">
+                                    <span class="badge badge-{{ $device->status_color }} py-1 px-2">
+                                        {{ ucfirst($device->status) }}
+                                    </span>
                                 </td>
                             </tr>
                             @endforeach
@@ -294,38 +292,65 @@
         </div>
     </div>
 
-    <!-- Status Distribution -->
-    <div class="col-xl-4 col-lg-5">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Status Distribution</h6>
+    <!-- Recent Events -->
+    <div class="col-xl-6 col-lg-6 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary mb-0">Recent Events</h6>
+                <a href="{{ route('earthquake-events.index') }}" class="btn btn-sm btn-outline-primary py-1 px-3">
+                    View All
+                </a>
             </div>
-            <div class="card-body">
-                <div class="chart-pie pt-4">
-                    <canvas id="statusChart"></canvas>
-                </div>
-                <div class="mt-4 text-center small">
-                    <span class="mr-2">
-                        <i class="fas fa-circle text-warning"></i> Warning
-                    </span>
-                    <span class="mr-2">
-                        <i class="fas fa-circle text-danger"></i> Danger
-                    </span>
-                    <span class="mr-2">
-                        <i class="fas fa-circle text-success"></i> Normal
-                    </span>
-                </div>
-                <div class="mt-4">
-                    <h6>Average Magnitude by Status:</h6>
-                    <ul class="list-unstyled">
-                        @foreach($chartData['status_distribution']['avg_magnitudes'] as $index => $avg)
-                        <li class="mb-2">
-                            <i class="fas fa-circle text-{{ $chartData['status_distribution']['colors'][$index] }} mr-2"></i>
-                            <strong>{{ $chartData['status_distribution']['labels'][$index] }}:</strong>
-                            {{ $avg }}
-                        </li>
-                        @endforeach
-                    </ul>
+            <div class="card-body p-0" style="max-height: 320px; overflow-y: auto;">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th style="width: 20%">Time</th>
+                                <th style="width: 25%">Device</th>
+                                <th style="width: 15%">Magnitude</th>
+                                <th style="width: 15%">Status</th>
+                                <th style="width: 25%">Location</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($recentEvents as $event)
+                            <tr>
+                                <td class="align-middle">
+                                    <div>
+                                        <div class="font-weight-bold">{{ $event->occurred_at->format('M d') }}</div>
+                                        <small class="text-muted">{{ $event->occurred_at->format('H:i') }}</small>
+                                    </div>
+                                </td>
+                                <td class="align-middle">
+                                    <a href="{{ route('devices.show', $event->device_id) }}" class="text-primary">
+                                        {{ $event->device->nama_device }}
+                                    </a>
+                                </td>
+                                <td class="align-middle text-center">
+                                    <span class="badge badge-{{ $event->magnitude_color }} py-1 px-2">
+                                        {{ number_format($event->magnitude, 1) }}
+                                    </span>
+                                </td>
+                                <td class="align-middle text-center">
+                                    <span class="badge badge-{{ $event->status_color }} py-1 px-2">
+                                        {{ ucfirst($event->status) }}
+                                    </span>
+                                </td>
+                                <td class="align-middle">
+                                    @if($event->hasLocation())
+                                        <small class="text-success d-block">
+                                            <i class="fas fa-map-marker-alt mr-1"></i>
+                                            {{ number_format($event->latitude, 2) }}, {{ number_format($event->longitude, 2) }}
+                                        </small>
+                                    @else
+                                        <span class="text-muted small">Not specified</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -442,7 +467,7 @@
                             <option value="json">JSON</option>
                         </select>
                     </div>
-                    <div class="alert alert-info">
+                    <div class="alert alert-info mb-0">
                         <i class="fas fa-info-circle mr-2"></i>
                         CSV format is recommended for spreadsheet applications.
                     </div>
@@ -468,27 +493,47 @@
 
     .chart-bar {
         position: relative;
-        height: 300px;
     }
 
     .chart-pie {
         position: relative;
-        height: 250px;
     }
 
     .card-body canvas {
         max-width: 100%;
     }
 
-    .badge-primary { background: linear-gradient(45deg, #4e73df, #224abe); }
-    .badge-success { background: linear-gradient(45deg, #1cc88a, #13855c); }
-    .badge-warning { background: linear-gradient(45deg, #f6c23e, #dda20a); }
-    .badge-danger { background: linear-gradient(45deg, #e74a3b, #be2617); }
+    .badge-primary {
+        background: linear-gradient(45deg, #4e73df, #224abe);
+    }
+
+    .badge-success {
+        background: linear-gradient(45deg, #1cc88a, #13855c);
+    }
+
+    .badge-warning {
+        background: linear-gradient(45deg, #f6c23e, #dda20a);
+    }
+
+    .badge-danger {
+        background: linear-gradient(45deg, #e74a3b, #be2617);
+    }
 
     .table th {
         font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
         color: #4e73df;
         border-top: none;
+        position: sticky;
+        top: 0;
+        background: #f8f9fc;
+        z-index: 10;
+    }
+
+    .table td {
+        vertical-align: middle !important;
+        font-size: 0.9rem;
     }
 
     .dropdown-menu {
@@ -498,6 +543,23 @@
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(-10px); }
         to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+        border-radius: 0.5rem;
+    }
+
+    .card-header {
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .thead-light th {
+        background-color: #f8f9fc;
+        border-bottom: 2px solid #e3e6f0;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fc;
     }
 </style>
 @endpush
@@ -546,6 +608,7 @@
             },
             options: {
                 maintainAspectRatio: false,
+                responsive: true,
                 scales: {
                     y: {
                         beginAtZero: true,
@@ -555,19 +618,29 @@
                         title: {
                             display: true,
                             text: 'Number of Events'
+                        },
+                        grid: {
+                            drawBorder: false
                         }
                     },
                     x: {
                         title: {
                             display: true,
                             text: 'Date'
+                        },
+                        grid: {
+                            display: false
                         }
                     }
                 },
                 plugins: {
                     legend: {
                         display: true,
-                        position: 'top'
+                        position: 'top',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
                     },
                     tooltip: {
                         mode: 'index',
@@ -596,6 +669,7 @@
             },
             options: {
                 maintainAspectRatio: false,
+                responsive: true,
                 tooltips: {
                     backgroundColor: "rgb(255,255,255)",
                     bodyFontColor: "#858796",
@@ -638,12 +712,16 @@
             },
             options: {
                 maintainAspectRatio: false,
+                responsive: true,
                 scales: {
                     y: {
                         beginAtZero: true,
                         title: {
                             display: true,
                             text: 'Number of Events'
+                        },
+                        grid: {
+                            drawBorder: false
                         }
                     },
                     y1: {
@@ -656,6 +734,11 @@
                         },
                         grid: {
                             drawOnChartArea: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
                         }
                     }
                 },
@@ -683,6 +766,7 @@
             },
             options: {
                 maintainAspectRatio: false,
+                responsive: true,
                 tooltips: {
                     backgroundColor: "rgb(255,255,255)",
                     bodyFontColor: "#858796",
@@ -701,7 +785,7 @@
                         color: '#fff',
                         font: {
                             weight: 'bold',
-                            size: 14
+                            size: 12
                         },
                         formatter: function(value, context) {
                             return value;
@@ -754,6 +838,7 @@
             },
             options: {
                 maintainAspectRatio: false,
+                responsive: true,
                 scales: {
                     y: {
                         beginAtZero: true,
@@ -763,19 +848,29 @@
                         title: {
                             display: true,
                             text: 'Number of Events'
+                        },
+                        grid: {
+                            drawBorder: false
                         }
                     },
                     x: {
                         title: {
                             display: true,
                             text: 'Date'
+                        },
+                        grid: {
+                            display: false
                         }
                     }
                 },
                 plugins: {
                     legend: {
                         display: true,
-                        position: 'top'
+                        position: 'top',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
                     },
                     tooltip: {
                         mode: 'index',
@@ -789,7 +884,13 @@
             }
         });
 
-        Swal.fire('Success!', `Changed to ${type} chart.`, 'success');
+        Swal.fire({
+            icon: 'success',
+            title: 'Chart Type Changed!',
+            text: `Changed to ${type} chart.`,
+            timer: 2000,
+            showConfirmButton: false
+        });
     }
 
     // Download chart as image
@@ -800,7 +901,13 @@
         link.href = canvas.toDataURL('image/png');
         link.click();
 
-        Swal.fire('Downloaded!', 'Chart has been downloaded as PNG.', 'success');
+        Swal.fire({
+            icon: 'success',
+            title: 'Chart Downloaded!',
+            text: 'Chart has been downloaded as PNG.',
+            timer: 2000,
+            showConfirmButton: false
+        });
     }
 
     // Preview custom report
@@ -842,43 +949,45 @@
         .then(data => {
             if (data.success) {
                 let previewHtml = `
-                    <h6>Report Preview</h6>
-                    <p class="mb-2"><strong>Type:</strong> ${data.report_type}</p>
-                    <p class="mb-2"><strong>Period:</strong> ${data.start_date} to ${data.end_date}</p>
-                    <hr>
+                    <h6 class="font-weight-bold">Report Preview</h6>
+                    <div class="mb-3">
+                        <span class="badge badge-primary mr-2">${data.report_type}</span>
+                        <span class="text-muted">${data.start_date} to ${data.end_date}</span>
+                    </div>
+                    <hr class="my-3">
                 `;
 
                 if (data.data && data.data.length > 0) {
                     const sample = data.data[0];
                     previewHtml += `
-                        <p><strong>Sample Data:</strong></p>
+                        <p class="font-weight-bold mb-2">Sample Data:</p>
                         <div class="table-responsive">
-                            <table class="table table-sm">
+                            <table class="table table-sm table-bordered">
                                 <thead>
                                     <tr>
-                                        ${Object.keys(sample).map(key => `<th>${key}</th>`).join('')}
+                                        ${Object.keys(sample).map(key => `<th class="small">${key}</th>`).join('')}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        ${Object.values(sample).map(value => `<td>${value}</td>`).join('')}
+                                        ${Object.values(sample).map(value => `<td class="small">${value}</td>`).join('')}
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <p class="mb-0"><strong>Total Records:</strong> ${data.data.length}</p>
+                        <p class="mb-0 small"><strong>Total Records:</strong> ${data.data.length}</p>
                     `;
                 } else {
-                    previewHtml += '<p class="text-muted">No data found for the selected criteria.</p>';
+                    previewHtml += '<p class="text-muted mb-0">No data found for the selected criteria.</p>';
                 }
 
                 preview.innerHTML = previewHtml;
             } else {
-                preview.innerHTML = '<p class="text-danger">Error generating preview.</p>';
+                preview.innerHTML = '<p class="text-danger mb-0">Error generating preview.</p>';
             }
         })
         .catch(error => {
-            preview.innerHTML = '<p class="text-danger">Error loading preview.</p>';
+            preview.innerHTML = '<p class="text-danger mb-0">Error loading preview.</p>';
             console.error('Error:', error);
         });
     }
@@ -923,11 +1032,13 @@
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
 
-                Swal.fire(
-                    'Report Generated!',
-                    'The report has been downloaded successfully.',
-                    'success'
-                );
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Report Generated!',
+                    text: 'The report has been downloaded successfully.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
 
                 $('#customReportModal').modal('hide');
             } else {

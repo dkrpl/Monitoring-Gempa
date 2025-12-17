@@ -4,17 +4,17 @@
 @section('page-title', 'Device Details: ' . $device->nama_device)
 
 @section('action-button')
-    <div class="btn-group" role="group">
-        <a href="{{ route('devices.edit', $device) }}" class="btn btn-warning">
-            <i class="fas fa-edit mr-2"></i>Edit
-        </a>
-        <button type="button" class="btn btn-success ml-2" onclick="simulateHeartbeat({{ $device->id }})">
-            <i class="fas fa-heartbeat mr-2"></i>Simulate Heartbeat
-        </button>
-        <a href="{{ route('devices.index') }}" class="btn btn-secondary ml-2">
-            <i class="fas fa-arrow-left mr-2"></i>Back to Devices
-        </a>
-    </div>
+<div class="btn-group" role="group">
+    <a href="{{ route('devices.edit', $device) }}" class="btn btn-warning">
+        <i class="fas fa-edit mr-2"></i>Edit
+    </a>
+    <button type="button" class="btn btn-success ml-2" onclick="simulateHeartbeat({{ $device->id }})">
+        <i class="fas fa-heartbeat mr-2"></i>Simulate Heartbeat
+    </button>
+    <a href="{{ route('devices.index') }}" class="btn btn-secondary ml-2">
+        <i class="fas fa-arrow-left mr-2"></i>Back to Devices
+    </a>
+</div>
 @endsection
 
 @section('content')
@@ -83,28 +83,22 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-6 mb-3">
-                        <button type="button" class="btn btn-outline-primary btn-block" onclick="generateQRCode({{ $device->id }})">
-                            <i class="fas fa-qrcode"></i><br>
-                            <small>QR Code</small>
-                        </button>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <button type="button" class="btn btn-outline-info btn-block" onclick="viewLogs({{ $device->id }})">
-                            <i class="fas fa-history"></i><br>
+                        <button type="button" class="btn btn-outline-info btn-block py-2" onclick="viewLogs({{ $device->id }})">
+                            <i class="fas fa-history fa-lg mb-1"></i><br>
                             <small>View Logs</small>
                         </button>
                     </div>
-                    <div class="col-6">
-                        <button type="button" class="btn btn-outline-warning btn-block" onclick="simulateEvent({{ $device->id }})">
-                            <i class="fas fa-bell"></i><br>
+                    {{-- <div class="col-6 mb-3">
+                        <button type="button" class="btn btn-outline-warning btn-block py-2" onclick="simulateEvent({{ $device->id }})">
+                            <i class="fas fa-bell fa-lg mb-1"></i><br>
                             <small>Test Alert</small>
                         </button>
-                    </div>
+                    </div> --}}
                     <div class="col-6">
-                        <button type="button" class="btn btn-outline-success btn-block status-btn"
+                        <button type="button" class="btn btn-outline-success btn-block py-2 status-btn"
                                 data-device-id="{{ $device->id }}"
                                 data-status="{{ $device->status }}">
-                            <i class="fas fa-power-off"></i><br>
+                            <i class="fas fa-power-off fa-lg mb-1"></i><br>
                             <small>{{ $device->status === 'aktif' ? 'Deactivate' : 'Activate' }}</small>
                         </button>
                     </div>
@@ -117,13 +111,14 @@
     <div class="col-lg-8">
         <!-- Statistics Cards -->
         <div class="row">
-            <div class="col-md-6 mb-4">
+            <div class="col-md-6 col-lg-3 mb-4">
                 <div class="card border-left-primary shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Total Events</div>
+                                    Total Events
+                                </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $statistics['total_events'] }}</div>
                             </div>
                             <div class="col-auto">
@@ -134,13 +129,14 @@
                 </div>
             </div>
 
-            <div class="col-md-6 mb-4">
+            <div class="col-md-6 col-lg-3 mb-4">
                 <div class="card border-left-warning shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                    Warning Events</div>
+                                    Warning Events
+                                </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $statistics['warning_events'] }}</div>
                             </div>
                             <div class="col-auto">
@@ -151,13 +147,14 @@
                 </div>
             </div>
 
-            <div class="col-md-6 mb-4">
+            <div class="col-md-6 col-lg-3 mb-4">
                 <div class="card border-left-danger shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-                                    Danger Events</div>
+                                    Danger Events
+                                </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $statistics['danger_events'] }}</div>
                             </div>
                             <div class="col-auto">
@@ -168,13 +165,14 @@
                 </div>
             </div>
 
-            <div class="col-md-6 mb-4">
+            <div class="col-md-6 col-lg-3 mb-4">
                 <div class="card border-left-info shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                    Today's Logs</div>
+                                    Today's Logs
+                                </div>
                                 <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $statistics['today_logs'] }}</div>
                             </div>
                             <div class="col-auto">
@@ -192,117 +190,133 @@
                 <h6 class="m-0 font-weight-bold text-primary">Activity (Last 7 Days)</h6>
             </div>
             <div class="card-body">
-                <div class="chart-area">
+                <div class="chart-area" style="height: 300px;">
                     <canvas id="activityChart"></canvas>
                 </div>
             </div>
         </div>
 
         <!-- Recent Events & Logs -->
-<div class="row">
-    <div class="col-lg-6">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">Recent Events</h6>
-                <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
-            </div>
-            <div class="card-body">
-                @if($device->earthquakeEvents->isEmpty())
-                    <div class="text-center py-3">
-                        <i class="fas fa-check-circle fa-2x text-success mb-3"></i>
-                        <p class="text-muted">No earthquake events recorded</p>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card shadow mb-4 h-100">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary mb-0">Recent Events</h6>
+                        <a href="#" class="btn btn-sm btn-outline-primary py-1 px-3">
+                            View All
+                        </a>
                     </div>
-                @else
-                    <div class="list-group">
-                        @foreach($device->earthquakeEvents as $event)
-                            <div class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">
-                                        <i class="fas fa-{{ $event->status === 'danger' ? 'fire' : 'exclamation-triangle' }} text-{{ $event->status_color }} mr-2"></i>
-                                        {{ $event->status === 'danger' ? 'Danger' : 'Warning' }} Event
-                                    </h6>
-                                    <small class="text-muted">{{ $event->occurred_at->diffForHumans() }}</small>
-                                </div>
-                                <p class="mb-1">
-                                    <strong>Magnitude:</strong> {{ $event->magnitude }}
-                                </p>
-                                <small class="text-muted">
-                                    {{ $event->occurred_at->format('M d, Y H:i:s') }}
-                                </small>
+                    <div class="card-body p-0" style="max-height: 300px; overflow-y: auto;">
+                        @if($device->earthquakeEvents->isEmpty())
+                            <div class="text-center py-5">
+                                <i class="fas fa-check-circle fa-2x text-success mb-3"></i>
+                                <p class="text-muted mb-0">No earthquake events recorded</p>
                             </div>
-                        @endforeach
+                        @else
+                            <div class="list-group list-group-flush">
+                                @foreach($device->earthquakeEvents->take(5) as $event)
+                                    <div class="list-group-item list-group-item-action border-bottom py-3 px-4">
+                                        <div class="d-flex w-100 justify-content-between align-items-start mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-{{ $event->status === 'danger' ? 'fire' : 'exclamation-triangle' }} text-{{ $event->status_color }} mr-2 fa-lg"></i>
+                                                <h6 class="mb-0 font-weight-bold">
+                                                    {{ $event->status === 'danger' ? 'Danger' : 'Warning' }} Event
+                                                </h6>
+                                            </div>
+                                            <small class="text-muted text-nowrap">{{ $event->occurred_at->diffForHumans() }}</small>
+                                        </div>
+                                        <div class="mb-2">
+                                            <span class="badge badge-light mr-2">
+                                                <i class="fas fa-wave-square mr-1"></i> Magnitude: {{ $event->magnitude }}
+                                            </span>
+                                        </div>
+                                        <small class="text-muted d-block">
+                                            <i class="far fa-clock mr-1"></i>{{ $event->occurred_at->format('M d, Y H:i:s') }}
+                                        </small>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
-                @endif
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="col-lg-6">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">Recent Logs</h6>
-                <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
-            </div>
-            <div class="card-body">
-                @if($device->logs->isEmpty())
-                    <div class="text-center py-3">
-                        <i class="fas fa-history fa-2x text-gray-300 mb-3"></i>
-                        <p class="text-muted">No logs available</p>
+            <div class="col-lg-6">
+                <div class="card shadow mb-4 h-100">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary mb-0">Recent Logs</h6>
+                        <a href="#" class="btn btn-sm btn-outline-primary py-1 px-3">
+                            View All
+                        </a>
                     </div>
-                @else
-                    <div class="list-group">
-                        @foreach($device->logs as $log)
-                            <div class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h6 class="mb-1">
-                                        <i class="fas fa-{{ $log->status === 'online' ? 'wifi' : 'wifi-slash' }} text-{{ $log->status === 'online' ? 'success' : 'danger' }} mr-2"></i>
-                                        {{ ucfirst($log->status) }}
-                                    </h6>
-                                    <small class="text-muted">{{ $log->logged_at->diffForHumans() }}</small>
-                                </div>
-                                @if($log->magnitude)
-                                    <p class="mb-1">
-                                        <strong>Magnitude:</strong> {{ $log->magnitude }}
-                                    </p>
-                                @endif
-                                <small class="text-muted">
-                                    {{ $log->logged_at->format('M d, Y H:i:s') }}
-                                </small>
+                    <div class="card-body p-0" style="max-height: 300px; overflow-y: auto;">
+                        @if($device->logs->isEmpty())
+                            <div class="text-center py-5">
+                                <i class="fas fa-history fa-2x text-gray-300 mb-3"></i>
+                                <p class="text-muted mb-0">No logs available</p>
                             </div>
-                        @endforeach
+                        @else
+                            <div class="list-group list-group-flush">
+                                @foreach($device->logs->take(5) as $log)
+                                    <div class="list-group-item list-group-item-action border-bottom py-3 px-4">
+                                        <div class="d-flex w-100 justify-content-between align-items-start mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-{{ $log->status === 'online' ? 'wifi' : 'wifi-slash' }} text-{{ $log->status === 'online' ? 'success' : 'danger' }} mr-2 fa-lg"></i>
+                                                <h6 class="mb-0 font-weight-bold">
+                                                    {{ ucfirst($log->status) }}
+                                                </h6>
+                                            </div>
+                                            <small class="text-muted text-nowrap">{{ $log->logged_at->diffForHumans() }}</small>
+                                        </div>
+                                        @if($log->magnitude)
+                                            <div class="mb-2">
+                                                <span class="badge badge-light mr-2">
+                                                    <i class="fas fa-wave-square mr-1"></i> Magnitude: {{ $log->magnitude }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                        <small class="text-muted d-block">
+                                            <i class="far fa-clock mr-1"></i>{{ $log->logged_at->format('M d, Y H:i:s') }}
+                                        </small>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
-                @endif
+                </div>
             </div>
         </div>
     </div>
 </div>
 
         <!-- Danger Zone -->
-        <div class="card shadow border-left-danger">
+        <div class="card shadow border-left-danger mt-3">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-danger">
+                <h6 class="m-0 font-weight-bold text-danger mb-0">
                     <i class="fas fa-exclamation-triangle mr-2"></i>Danger Zone
                 </h6>
             </div>
             <div class="card-body">
-                <p class="text-danger mb-4">
+                <div class="alert alert-danger mb-4 py-2">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
                     <strong>Warning:</strong> These actions are irreversible. Please proceed with caution.
-                </p>
+                </div>
 
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="card border-danger mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title text-danger">
-                                    <i class="fas fa-trash mr-2"></i>Delete Device
-                                </h5>
-                                <p class="card-text">
-                                    Permanently delete this device and all associated data. This action cannot be undone.
-                                </p>
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="card border-danger h-100">
+                            <div class="card-body text-center py-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-trash fa-2x text-danger mb-3"></i>
+                                    <h5 class="card-title text-danger mb-2">Delete Device</h5>
+                                    <p class="card-text text-muted small mb-4">
+                                        Permanently delete this device and all associated data. This action cannot be undone.
+                                    </p>
+                                </div>
                                 <form action="{{ route('devices.destroy', $device) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button" class="btn btn-danger delete-btn">
+                                    <button type="button" class="btn btn-danger delete-btn px-4">
                                         <i class="fas fa-trash mr-2"></i>Delete Device
                                     </button>
                                 </form>
@@ -311,15 +325,16 @@
                     </div>
 
                     <div class="col-md-6">
-                        <div class="card border-warning mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title text-warning">
-                                    <i class="fas fa-redo mr-2"></i>Reset Device
-                                </h5>
-                                <p class="card-text">
-                                    Reset this device to factory settings. This will clear all logs and events.
-                                </p>
-                                <button type="button" class="btn btn-warning" onclick="resetDevice({{ $device->id }})">
+                        <div class="card border-warning h-100">
+                            <div class="card-body text-center py-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-redo fa-2x text-warning mb-3"></i>
+                                    <h5 class="card-title text-warning mb-2">Reset Device</h5>
+                                    <p class="card-text text-muted small mb-4">
+                                        Reset this device to factory settings. This will clear all logs and events.
+                                    </p>
+                                </div>
+                                <button type="button" class="btn btn-warning px-4" onclick="resetDevice({{ $device->id }})">
                                     <i class="fas fa-redo mr-2"></i>Reset Device
                                 </button>
                             </div>
@@ -328,8 +343,6 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
 <!-- QR Code Modal -->
 <div class="modal fade" id="qrCodeModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -386,6 +399,7 @@
 
     .list-group-item:hover {
         transform: translateX(5px);
+        background-color: #f8f9fa;
     }
 
     .list-group-item:nth-child(odd) {
@@ -394,6 +408,21 @@
 
     .list-group-item:nth-child(even) {
         border-left-color: #1cc88a;
+    }
+
+    .chart-area {
+        position: relative;
+        height: 300px;
+    }
+
+    .btn-outline-primary, .btn-outline-info, .btn-outline-warning, .btn-outline-success {
+        border-width: 1px;
+    }
+
+    .badge-light {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        font-weight: 500;
     }
 </style>
 @endpush
@@ -429,11 +458,20 @@
             },
             options: {
                 maintainAspectRatio: false,
+                responsive: true,
                 scales: {
                     y: {
                         beginAtZero: true,
                         ticks: {
                             precision: 0
+                        },
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
                         }
                     }
                 },
@@ -500,9 +538,7 @@
     function generateQRCode(deviceId) {
         $('#qrCodeModal').modal('show');
 
-        // In a real app, you would fetch and display the QR code
         setTimeout(() => {
-            // Simulate QR code generation
             Swal.fire({
                 icon: 'success',
                 title: 'QR Code Generated',
@@ -523,7 +559,6 @@
         });
 
         setTimeout(() => {
-            // In a real app, redirect to logs page
             window.location.href = `#`;
         }, 1500);
     }
@@ -539,7 +574,6 @@
             confirmButtonText: 'Yes, simulate!'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Simulate API call
                 setTimeout(() => {
                     Swal.fire(
                         'Event Simulated!',
@@ -609,8 +643,6 @@
         if (lastSeenElement) {
             const timeText = lastSeenElement.textContent;
             if (timeText.includes('minute') || timeText.includes('second')) {
-                // In a real app, you would fetch updated time
-                // For now, we'll just reload after 5 minutes
                 setTimeout(() => {
                     location.reload();
                 }, 300000);

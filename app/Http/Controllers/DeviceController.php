@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Device;
+use App\Models\DeviceLog; // Tambahkan ini
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -49,7 +50,15 @@ class DeviceController extends Controller
             'last_seen' => $request->status === 'aktif' ? now() : null,
         ];
 
-        Device::create($deviceData);
+        $device = Device::create($deviceData);
+
+        // Log device creation
+        $this->logDeviceChange($device, 'created', [
+            'nama_device' => $device->nama_device,
+            'lokasi' => $device->lokasi,
+            'status' => $device->status,
+            'uuid' => $device->uuid
+        ]);
 
         return redirect()->route('devices.index')
             ->with('success', 'Device created successfully.');
@@ -58,18 +67,15 @@ class DeviceController extends Controller
     /**
      * Display the specified resource.
      */
-    /**
- * Display the specified resource.
- */
     public function show(Device $device)
     {
         // Load relationships with proper ordering
         $device->load([
             'earthquakeEvents' => function($query) {
-                $query->orderBy('occurred_at', 'desc')->limit(10);
+                $query->orderBy('occurred_at', 'desc')->limit(3);
             },
             'logs' => function($query) {
-                $query->orderBy('logged_at', 'desc')->limit(10);
+                $query->orderBy('logged_at', 'desc')->limit(3);
             }
         ]);
 
@@ -108,6 +114,13 @@ class DeviceController extends Controller
             'status' => ['required', 'in:aktif,nonaktif'],
         ]);
 
+        // Simpan data sebelum diubah untuk logging
+        $oldData = [
+            'nama_device' => $device->nama_device,
+            'lokasi' => $device->lokasi,
+            'status' => $device->status,
+        ];
+
         $deviceData = [
             'nama_device' => $request->nama_device,
             'lokasi' => $request->lokasi,
@@ -116,6 +129,10 @@ class DeviceController extends Controller
         ];
 
         $device->update($deviceData);
+
+        // Log device update dengan perubahan
+        $changes = $this->getDeviceChanges($oldData, $deviceData);
+        $this->logDeviceChange($device, 'updated', $changes);
 
         return redirect()->route('devices.index')
             ->with('success', 'Device updated successfully.');
@@ -126,6 +143,14 @@ class DeviceController extends Controller
      */
     public function destroy(Device $device)
     {
+        // Log device deletion
+        $this->logDeviceChange($device, 'deleted', [
+            'nama_device' => $device->nama_device,
+            'lokasi' => $device->lokasi,
+            'status' => $device->status,
+            'uuid' => $device->uuid
+        ]);
+
         $device->delete();
 
         return redirect()->route('devices.index')
@@ -141,9 +166,19 @@ class DeviceController extends Controller
             'status' => ['required', 'in:aktif,nonaktif']
         ]);
 
+        // Simpan status sebelum diubah untuk logging
+        $oldStatus = $device->status;
+
         $device->update([
             'status' => $request->status,
             'last_seen' => $request->status === 'aktif' ? now() : null
+        ]);
+
+        // Log status change
+        $this->logDeviceChange($device, 'status_changed', [
+            'old_status' => $oldStatus,
+            'new_status' => $request->status,
+            'action' => $request->status === 'aktif' ? 'device_activated' : 'device_deactivated'
         ]);
 
         return response()->json([
@@ -158,7 +193,16 @@ class DeviceController extends Controller
      */
     public function heartbeat(Device $device)
     {
+        $oldLastSeen = $device->last_seen;
+
         $device->update(['last_seen' => now()]);
+
+        // Log heartbeat
+        $this->logDeviceChange($device, 'heartbeat', [
+            'old_last_seen' => $oldLastSeen,
+            'new_last_seen' => $device->last_seen,
+            'status' => 'online'
+        ]);
 
         return response()->json([
             'success' => true,
@@ -178,6 +222,12 @@ class DeviceController extends Controller
             'name' => $device->nama_device,
             'location' => $device->lokasi
         ];
+
+        // Log QR code generation
+        $this->logDeviceChange($device, 'qr_generated', [
+            'qr_data' => $qrData,
+            'action' => 'qr_code_generated'
+        ]);
 
         // In a real app, you would generate an actual QR code
         // For this example, we'll just return the data
@@ -241,5 +291,57 @@ class DeviceController extends Controller
             'count' => $offlineDevices->count(),
             'devices' => $offlineDevices
         ]);
+    }
+
+    /**
+     * Log device changes to DeviceLog
+     * Mirip dengan fungsi simulate()
+     */
+    private function logDeviceChange(Device $device, string $action, array $metadata = [])
+    {
+        $status = 'online'; // Default status untuk perubahan device
+        $magnitude = null; // Untuk perubahan manual, magnitude tidak relevan
+
+        // Jika action adalah heartbeat atau status online, set magnitude random
+        if ($action === 'heartbeat' || ($action === 'status_changed' && ($metadata['new_status'] ?? '') === 'aktif')) {
+            $magnitude = rand(0, 100) / 10; // Random magnitude 0.0 - 10.0
+        }
+
+        $log = DeviceLog::create([
+            'device_id' => $device->id,
+            'status' => $status,
+            'magnitude' => $magnitude,
+            'logged_at' => now(),
+            'action' => $action, // Kolom tambahan untuk menyimpan jenis aksi
+            'metadata' => json_encode($metadata), // Kolom tambahan untuk menyimpan data perubahan
+        ]);
+
+        // Update device last_seen jika status aktif
+        if ($status === 'online' && $device->status === 'aktif') {
+            $device->update(['last_seen' => now()]);
+        }
+
+        return $log;
+    }
+
+    /**
+     * Get changes between old and new device data
+     */
+    private function getDeviceChanges(array $oldData, array $newData): array
+    {
+        $changes = [];
+
+        foreach ($oldData as $key => $oldValue) {
+            $newValue = $newData[$key] ?? null;
+
+            if ($oldValue !== $newValue) {
+                $changes[$key] = [
+                    'from' => $oldValue,
+                    'to' => $newValue
+                ];
+            }
+        }
+
+        return $changes;
     }
 }
