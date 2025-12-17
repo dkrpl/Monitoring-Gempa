@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('device_id')->constrained('devices')->onDelete('cascade');
             $table->float('magnitude');
-            $table->enum('status', ['warning', 'danger']);
+            $table->enum('status', ['normal', 'warning', 'danger', 'critical'])->default('normal');
             $table->dateTime('occurred_at');
             $table->timestamps();
         });

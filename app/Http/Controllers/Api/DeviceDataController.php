@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 class DeviceDataController extends Controller
 {
+
     /**
      * Receive data from IoT device
      */
